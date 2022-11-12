@@ -15,6 +15,15 @@ function main(){
     pointLight.position.y = 5;
     pointLight.position.z = -3;
 
+    var objLoader = new THREE.OBJLoader();
+    var lamp = objLoader.load("/models/TischlampeRed.obj", function(object){
+        object.scale.x = 1;
+        object.scale.y = 1;
+        object.scale.z = 1;
+        
+        scene.add(object);
+    });
+
     scene.add(floor);
     scene.add(pointLight);
     scene.add(generateMoon());
@@ -50,6 +59,18 @@ function generateBackground(){
         }
     ));
     return reflectionCube;
+}
+
+function generateLamp(){
+    var objLoader = new THREE.OBJLoader();
+    var lamp = objLoader.load("/models/TischlampeRed.obj", function(object){
+        object.scale.x = 4;
+        object.scale.y = 4;
+        object.scale.z = 4;
+        
+        return object;
+    });
+    return lamp;
 }
 
 function generateMoon(){
