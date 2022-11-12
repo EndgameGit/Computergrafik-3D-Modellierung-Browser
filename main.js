@@ -1,18 +1,61 @@
 var clock = new THREE.Clock();
 
 function main(){
+
+    // Create an instance of the WebGL Renderer as a tool that three.js uses to alocate space on the webpage
+    var renderer = new THREE.WebGLRenderer();
+
+    renderer.shadowMap.enabled = true;
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor("rgb(60,60,60)");
+    renderer.outputEncoding = THREE.sRGBEncoding;
+
+    // Inject the canvas element into the page
+    document.getElementById("webgl").appendChild(renderer.domElement);
+
+    // Create a scene and camera
     var scene = new THREE.Scene();
 
+    var camera = new THREE.PerspectiveCamera(
+        45,                                     // Field of View (normally between 40 and 80)
+        window.innerWidth/window.innerHeight,   // Site Ratio (aspect)
+        1,                                      // Near clipping plane
+        1000                                    // Far clipping plane
+    );
+
+    // Add an orbitcontrol class instance
+    var controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+    // Camera is by default set to (0,0,0) -> Change position and view
+    camera.position.x = 1;
+    camera.position.y = 5;
+    camera.position.z = 5;
+    // Changes the view of the camera
+    camera.lookAt(new THREE.Vector3(0,0,-5));
+
+    // Add an ambient light
+    var ambientLight = generateAmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+
+    // Add a point light
+    var pointLight = generatePointLight(0xffffff, 1);
+    pointLight.position.y = 5;
+    pointLight.position.z = -3;
+    scene.add(pointLight);
+
+    // Add a background to the scene
+    scene.background = generateBackground();
+
+    // Add a moon to the scene
+    scene.add(generateMoon());
+
+    // Add a floor to the the scene
     var floor = generateFloor(20, 20);
     floor.name = "floor";
     scene.add(floor);
     floor.rotation.x = Math.PI/2;
 
-    var pointLight = generatePointLight(0xffffff, 1);
-    pointLight.position.y = 5;
-    pointLight.position.z = -3;
-
-    var ambientLight = generateAmbientLight(0xffffff, 0.5);
+    
 
     new THREE.GLTFLoader()
         .load( 'models/TischlampeRed.glb', function ( gltf ) {
@@ -28,33 +71,6 @@ function main(){
             scene.add( gltf.scene );
 
         });
-
-    
-    scene.add(pointLight);
-    scene.add(ambientLight);
-    scene.add(generateMoon());
-    scene.background = generateBackground();
-
-
-    var camera = new THREE.PerspectiveCamera(
-        45, //Field of View
-        window.innerWidth/window.innerHeight, //Site Ratio
-        1, //Near clipping plane
-        1000 //Far clipping plane
-    );
-    camera.position.x = 1;
-    camera.position.y = 5;
-    camera.position.z = 5;
-    camera.lookAt(new THREE.Vector3(0,0,-5));
-
-    var renderer = new THREE.WebGLRenderer();
-    renderer.shadowMap.enabled = true;
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor("rgb(60,60,60)");
-    renderer.outputEncoding = THREE.sRGBEncoding;
-    document.getElementById("webgl").appendChild(renderer.domElement);
-    
-    var controls = new THREE.OrbitControls(camera, renderer.domElement);
 
     update(renderer, scene, camera, controls);
 }
@@ -82,49 +98,78 @@ function generateLamp(){
 }
 
 function generateMoon(){
-    var sphere = new THREE.SphereGeometry(3,40,40);
+    // Defining the moon geometry
+    var moonGeometry = new THREE.SphereGeometry(3,40,40);
+
+    // Defining the sphere texture
     var loader = new THREE.TextureLoader();
     var moonTexture = loader.load("img/moon.jpg");
-    var moonMat = new THREE.MeshBasicMaterial({map: moonTexture});
-    var moon = new THREE.Mesh(sphere, moonMat);
+
+    // Defining the sphare material
+    var moonMaterial = new THREE.MeshBasicMaterial({map: moonTexture});
+
+    // Creates the moon object, changes position and returns it
+    var moon = new THREE.Mesh(moonGeometry, moonMaterial);
     moon.position.x = -25;
     moon.position.y = 25;
     moon.position.z = 25;
+    
     return moon;
 }
 
+
 function generateFloor(w, d){
-    var geo = new THREE.PlaneGeometry(w, d);
-    var loader = new THREE.TextureLoader();
-    var floorTexture = loader.load("img/checkboard.jpg");
+    // Defining the floor geometry
+    var floorGeometry = new THREE.PlaneGeometry(w, d);
+    
+    // Defining the floor texture
+    var textureLoader = new THREE.TextureLoader();
+    var floorTexture = textureLoader.load("img/checkboard.jpg");
     floorTexture.wrapS = THREE.RepeatWrapping;
     floorTexture.wrapT = THREE.RepeatWrapping;
     floorTexture.repeat.set(5,5);
-    var floorMat = new THREE.MeshPhongMaterial({map: floorTexture, side: THREE.DoubleSide});
-    var floor = new THREE.Mesh(geo, floorMat);
+
+    // Defining the floor material
+    var floorMaterial = new THREE.MeshPhongMaterial({map: floorTexture, side: THREE.DoubleSide});
+
+    // Creates the floor object and returns it
+    var floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.receiveShadow = true;
+
     return floor;
 }
 
+
 function generateBox(w, h, d){
-    var geo = new THREE.BoxGeometry(w, h, d);
-    var mat = new THREE.MeshPhongMaterial({
+    // Defining the box geometry
+    var boxGeometry = new THREE.BoxGeometry(w, h, d);
+
+    // Defining the box material
+    var boxMaterial = new THREE.MeshPhongMaterial({
         color: "rgb(100,100,100)"
     });
-    var mesh = new THREE.Mesh(geo, mat);
-    mesh.castShadow = true;
-    return mesh;
+
+    // Creates the box object and returns it
+    var box = new THREE.Mesh(boxGeometry, boxMaterial);
+    box.castShadow = true;
+
+    return box;
 }
 
+
 function generatePointLight(color, intensity){
-    var light = new THREE.PointLight(color, intensity);
-    light.castShadow = true;
-    return light;
+    // Generates a point light as a light source
+    var pointLight = new THREE.PointLight(color, intensity);
+    pointLight.castShadow = true;
+
+    return pointLight;
 }
 
 function generateAmbientLight(color, intensity){
-    var light = new THREE.AmbientLight(color, intensity);
-    return light;
+    // Generates an all shining light source
+    var ambientLight = new THREE.AmbientLight(color, intensity);
+
+    return ambientLight;
 }
 
 function update(renderer, scene, camera, controls){
@@ -136,6 +181,8 @@ function update(renderer, scene, camera, controls){
     // scene.traverse(function(child){
     //     child.position.x += 0.001;
     // })
+
+    // Whats that? lol
 
     var step = 50*clock.getDelta();
 
