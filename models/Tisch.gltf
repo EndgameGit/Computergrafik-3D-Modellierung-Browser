@@ -201,17 +201,17 @@
         {
             "mimeType" : "image/jpeg",
             "name" : "wood_table_001_nor_gl_16k",
-            "uri" : "wood_table_001_nor_gl_16k.jpg"
+            "uri" : "textures/wood_table_001_nor_gl_16k.jpg"
         },
         {
             "mimeType" : "image/jpeg",
             "name" : "wood_table_001_diff_4k",
-            "uri" : "wood_table_001_diff_4k.jpg"
+            "uri" : "textures/wood_table_001_diff_4k.jpg"
         },
         {
             "mimeType" : "image/jpeg",
             "name" : "wood_table_001_rough_4k",
-            "uri" : "wood_table_001_rough_4k.jpg"
+            "uri" : "textures/wood_table_001_rough_4k.jpg"
         }
     ],
     "accessors" : [

@@ -5,43 +5,36 @@ function main(){
 
     var floor = generateFloor(20, 20);
     floor.name = "floor";
+    scene.add(floor);
     floor.rotation.x = Math.PI/2;
 
     var pointLight = generatePointLight(0xffffff, 1);
     pointLight.position.y = 5;
     pointLight.position.z = -3;
 
-    var ambientLight = generateAmbientLight(0xffffff, 0.2);
+    var ambientLight = generateAmbientLight(0xffffff, 0.5);
 
     new THREE.GLTFLoader()
         .load( 'models/TischlampeRed.glb', function ( gltf ) {
             gltf.scene.scale.set(.1*gltf.scene.scale.x, .1*gltf.scene.scale.y, .1 * gltf.scene.scale.z)
-            gltf.scene.position.set()
+            gltf.scene.position.set(0,2,0);
             scene.add( gltf.scene );
 
 
         });
     new THREE.GLTFLoader()
         .load( 'models/Tisch.gltf', function ( gltf ) {
-            gltf.scene.scale.set(.3*gltf.scene.scale.x, .3*gltf.scene.scale.y, .3* gltf.scene.scale.z)
+            gltf.scene.scale.set(.3*gltf.scene.scale.x, .3*gltf.scene.scale.y, .3* gltf.scene.scale.z);
             scene.add( gltf.scene );
 
         });
 
-    // var objLoader = new THREE.OBJLoader();
-    // var lamp = objLoader.load("/models/TischlampeRed.obj", function(object){
-    //     object.scale.x = 1;
-    //     object.scale.y = 1;
-    //     object.scale.z = 1;
-        
-    //     scene.add(object);
-    // });
-
-    scene.add(floor);
+    
     scene.add(pointLight);
-    // scene.add(ambientLight);
+    scene.add(ambientLight);
     scene.add(generateMoon());
     scene.background = generateBackground();
+
 
     var camera = new THREE.PerspectiveCamera(
         45, //Field of View
