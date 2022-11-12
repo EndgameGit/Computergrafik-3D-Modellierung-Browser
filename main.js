@@ -2,22 +2,20 @@ var clock = new THREE.Clock();
 
 function main(){
     var scene = new THREE.Scene();
-    var box = generateBox(1,1,1);
-    box.name = "box1";
-    box.position.z = -(box.geometry.parameters.height/2);
 
-    var floor = generateFloor(10, 10);
+    var floor = generateFloor(20, 20);
     floor.name = "floor";
     floor.rotation.x = Math.PI/2;
-    // floor.add(box);
 
     var pointLight = generatePointLight(0xffffff, 1);
     pointLight.position.y = 5;
     pointLight.position.z = -3;
 
-    new THREE.GLTFLoader()
-        .load( 'models/plant.gltf', function ( gltf ) {
+    var ambientLight = generateAmbientLight(0xffffff, 0.2);
 
+    new THREE.GLTFLoader()
+        .load( 'models/TischlampeRed.glb', function ( gltf ) {
+            gltf.scene.scale.set(.1*gltf.scene.scale.x, .1*gltf.scene.scale.y, .1 * gltf.scene.scale.z)
             scene.add( gltf.scene );
 
             gltf.animations; // Array<THREE.AnimationClip>
@@ -39,6 +37,7 @@ function main(){
 
     scene.add(floor);
     scene.add(pointLight);
+    // scene.add(ambientLight);
     scene.add(generateMoon());
     scene.background = generateBackground();
 
@@ -106,7 +105,7 @@ function generateFloor(w, d){
     floorTexture.wrapS = THREE.RepeatWrapping;
     floorTexture.wrapT = THREE.RepeatWrapping;
     floorTexture.repeat.set(5,5);
-    var floorMat = new THREE.MeshBasicMaterial({map: floorTexture, side: THREE.DoubleSide});
+    var floorMat = new THREE.MeshPhongMaterial({map: floorTexture, side: THREE.DoubleSide});
     var floor = new THREE.Mesh(geo, floorMat);
     floor.receiveShadow = true;
     return floor;
@@ -125,6 +124,11 @@ function generateBox(w, h, d){
 function generatePointLight(color, intensity){
     var light = new THREE.PointLight(color, intensity);
     light.castShadow = true;
+    return light;
+}
+
+function generateAmbientLight(color, intensity){
+    var light = new THREE.AmbientLight(color, intensity);
     return light;
 }
 
