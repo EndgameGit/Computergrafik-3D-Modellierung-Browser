@@ -9,31 +9,24 @@ function main(){
     var floor = generateFloor(10, 10);
     floor.name = "floor";
     floor.rotation.x = Math.PI/2;
-    floor.add(box);
+    // floor.add(box);
 
     var pointLight = generatePointLight(0xffffff, 1);
     pointLight.position.y = 5;
     pointLight.position.z = -3;
 
-    new THREE.MTLLoader()
-        .setPath( 'models/' )
-        .load( 'TischlampeRed.mtl', function ( materials ) {
+    new THREE.GLTFLoader()
+        .load( 'models/plant.gltf', function ( gltf ) {
 
-            materials.preload();
+            scene.add( gltf.scene );
 
-            new THREE.OBJLoader()
-                .setMaterials( materials )
-                .setPath( 'models/' )
-                .load( 'TischlampeRed.obj', function ( object ) {
+            gltf.animations; // Array<THREE.AnimationClip>
+            gltf.scene; // THREE.Group
+            gltf.scenes; // Array<THREE.Group>
+            gltf.cameras; // Array<THREE.Camera>
+            gltf.asset; // Object
 
-                    object.scale.x = 1;
-                    object.scale.y = 1;
-                    object.scale.z = 1;
-                    scene.add( object );
-
-                });
-
-        } );
+        });
 
     // var objLoader = new THREE.OBJLoader();
     // var lamp = objLoader.load("/models/TischlampeRed.obj", function(object){
@@ -64,6 +57,7 @@ function main(){
     renderer.shadowMap.enabled = true;
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor("rgb(60,60,60)");
+    renderer.outputEncoding = THREE.sRGBEncoding;
     document.getElementById("webgl").appendChild(renderer.domElement);
     
     var controls = new THREE.OrbitControls(camera, renderer.domElement);
