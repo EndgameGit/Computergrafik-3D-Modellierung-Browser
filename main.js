@@ -16,13 +16,15 @@ function main(){
     new THREE.GLTFLoader()
         .load( 'models/TischlampeRed.glb', function ( gltf ) {
             gltf.scene.scale.set(.1*gltf.scene.scale.x, .1*gltf.scene.scale.y, .1 * gltf.scene.scale.z)
+            gltf.scene.position.set()
             scene.add( gltf.scene );
 
-            gltf.animations; // Array<THREE.AnimationClip>
-            gltf.scene; // THREE.Group
-            gltf.scenes; // Array<THREE.Group>
-            gltf.cameras; // Array<THREE.Camera>
-            gltf.asset; // Object
+
+        });
+    new THREE.GLTFLoader()
+        .load( 'models/Tisch.gltf', function ( gltf ) {
+            gltf.scene.scale.set(.3*gltf.scene.scale.x, .3*gltf.scene.scale.y, .3* gltf.scene.scale.z)
+            scene.add( gltf.scene );
 
         });
 
