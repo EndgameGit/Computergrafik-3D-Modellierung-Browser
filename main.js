@@ -15,14 +15,34 @@ function main(){
     pointLight.position.y = 5;
     pointLight.position.z = -3;
 
-    var objLoader = new THREE.OBJLoader();
-    var lamp = objLoader.load("/models/TischlampeRed.obj", function(object){
-        object.scale.x = 1;
-        object.scale.y = 1;
-        object.scale.z = 1;
+    new THREE.MTLLoader()
+        .setPath( 'models/' )
+        .load( 'TischlampeRed.mtl', function ( materials ) {
+
+            materials.preload();
+
+            new THREE.OBJLoader()
+                .setMaterials( materials )
+                .setPath( 'models/' )
+                .load( 'TischlampeRed.obj', function ( object ) {
+
+                    object.scale.x = 1;
+                    object.scale.y = 1;
+                    object.scale.z = 1;
+                    scene.add( object );
+
+                });
+
+        } );
+
+    // var objLoader = new THREE.OBJLoader();
+    // var lamp = objLoader.load("/models/TischlampeRed.obj", function(object){
+    //     object.scale.x = 1;
+    //     object.scale.y = 1;
+    //     object.scale.z = 1;
         
-        scene.add(object);
-    });
+    //     scene.add(object);
+    // });
 
     scene.add(floor);
     scene.add(pointLight);
