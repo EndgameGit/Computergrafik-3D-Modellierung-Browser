@@ -1,9 +1,9 @@
 # Computergrafik Abgabe
 
 ## Authors
-Pascal Wildermuth
-Benedikt Dörflein
-Lukas Zwaller
+* Pascal Wildermuth
+* Benedikt Dörflein
+* Lukas Zwaller
 
 ## Project Setup
 Download [Node.js](https://nodejs.org/en/download/).
