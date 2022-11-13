@@ -2,6 +2,7 @@ import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { Water } from 'three/examples/jsm/objects/Water'
 
 const clock = new THREE.Clock()
 
@@ -52,17 +53,25 @@ function main(){
     // Add a moon to the scene
     scene.add(generatePlanet("moon.jpg", -25,6,25))
 
+    // Add water
+    var water = generateWater();
+    water.name = "water";
+    water.rotation.x = - Math.PI / 2;
+    water.position.y = 2;
+	scene.add(water);
+
+
     // Add a floor to the the scene
     var floor = generateFloor(20, 20)
     floor.name = "floor"
     scene.add(floor)
     floor.rotation.x = Math.PI/2
 
-    //load a tablelamp modell imported from blender
+    // Load a tablelamp modell imported from blender
     var tableLamp = loadGLTFModell("TischlampeRed.glb", 0.1)
     scene.add( tableLamp )
     tableLamp.position.set(0,2,0)
-    //load the table modell from blender
+    // Load the table modell from blender
     var table = loadGLTFModell("Tisch.gltf", 0.3)
     scene.add(table)
 
@@ -80,7 +89,10 @@ function update(renderer, scene, camera, controls){
     //     child.position.x += 0.001
     // })
 
-    // var step = 50*clock.getDelta()
+    var step = 50*clock.getDelta()
+
+    var water = scene.getObjectByName("water")
+    water.material.uniforms[ 'time' ].value += 1.0 / 60.0
 
     controls.update()
 
@@ -168,6 +180,27 @@ function loadGLTFModell(filename, scale){
         modell.add( gltf.scene )
     })
     return modell
+}
+
+
+function generateWater(width, length){
+    const waterGeometry = new THREE.PlaneGeometry( width, length );
+
+    var water = new Water(
+        waterGeometry,
+        {
+            textureWidth: 500,
+            textureHeight: 500,
+            waterNormals: new THREE.TextureLoader().load( 'img/waterNormal.jpg', function ( texture ) {
+
+                texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+
+            } ),
+            waterColor: 0x001e0f,
+            distortionScale: 1.7
+        }
+    );
+    return water;
 }
 
 main()
