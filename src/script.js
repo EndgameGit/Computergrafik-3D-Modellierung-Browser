@@ -32,10 +32,14 @@ function main(){
     camera.position.y = 5
     camera.position.z = 5
     // Changes the view of the camera
-    camera.lookAt(new THREE.Vector3(0,0,-5))
+    camera.lookAt(new THREE.Vector3(0,1,0))
 
     // Add an orbitcontrol class instance
     var controls = new OrbitControls(camera, renderer.domElement)
+    controls.maxPolarAngle = Math.PI * 0.495;
+    controls.target.set( 0, 1, 0 );
+    controls.minDistance = 4.0;
+    controls.maxDistance = 10.0;
 
     // Add an ambient light
     var ambientLight = generateAmbientLight(0xffffff, 0.5)
@@ -62,7 +66,7 @@ function main(){
 
 
     // Add a floor to the the scene
-    var floor = generateFloor(20, 20)
+    var floor = generateFloor(30, 30)
     floor.name = "floor"
     scene.add(floor)
     floor.rotation.x = Math.PI/2
