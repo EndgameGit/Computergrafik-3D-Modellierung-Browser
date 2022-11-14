@@ -66,7 +66,7 @@ async function main(){
     scene.add(deskLamp)
 
     // Load the table modell from blender
-    var [table, tableBox] = await loadGLTFModell("Tisch.gltf", 0.4)
+    var [table, tableBox] = await loadGLTFModell("NewTisch/NewTisch.gltf", 0.4)
     scene.add(table)
     
 
@@ -111,6 +111,12 @@ function update(renderer, scene, camera, controls){
         car.rotation.y += 0.1;
     }
     if(keyboard.pressed("W+D")){
+        car.rotation.y -= 0.1;
+    }
+    if(keyboard.pressed("S+D")){
+        car.rotation.y += 0.1;
+    }
+    if(keyboard.pressed("S+A")){
         car.rotation.y -= 0.1;
     }
 
