@@ -43,8 +43,11 @@ async function main(){
     // Add a background to the scene
     scene.background = generateBackground()
 
-    // Add a moon to the scene
-    scene.add(generatePlanet("moon.jpg", -25,6,25))
+    // Add some planets to the scene
+    scene.add(generatePlanet("moon.jpg", -25,6,45))
+    scene.add(generatePlanet("earth.jpg", -20,6,15))
+    scene.add(generatePlanet("mars.jpg", 25,6,-25))
+    scene.add(generatePlanet("venus.jpg", -15,6,-25))
 
     // Add water
     var water = generateWater();
