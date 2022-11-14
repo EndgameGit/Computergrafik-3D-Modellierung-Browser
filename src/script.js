@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Water } from 'three/examples/jsm/objects/Water'
+import { SphereGeometry, WebGLUniformsGroups } from 'three'
 
 const clock = new THREE.Clock()
 
@@ -42,14 +43,8 @@ function main(){
     controls.maxDistance = 10.0;
 
     // Add an ambient light
-    var ambientLight = generateAmbientLight(0xffffff, 0.5)
+    var ambientLight = generateAmbientLight(0xffffff, 0.2)
     scene.add(ambientLight)
-
-    // Add a point light
-    var pointLight = generatePointLight(0xffffff, 1)
-    pointLight.position.y = 5
-    pointLight.position.z = -3
-    scene.add(pointLight)
 
     // Add a background to the scene
     scene.background = generateBackground()
@@ -62,6 +57,7 @@ function main(){
     water.name = "water";
     water.rotation.x = - Math.PI / 2;
     water.position.y = 2;
+    water.position.x = 10;
 	scene.add(water);
 
 
@@ -71,10 +67,10 @@ function main(){
     scene.add(floor)
     floor.rotation.x = Math.PI/2
 
-    // Load a tablelamp modell imported from blender
-    var tableLamp = loadGLTFModell("TischlampeRed.glb", 0.1)
-    scene.add( tableLamp )
-    tableLamp.position.set(0,2,0)
+    var deskLamp = generateDeskLamp()
+    deskLamp.position.set(0, 0, 0)
+    scene.add(deskLamp)
+
     // Load the table modell from blender
     var table = loadGLTFModell("Tisch.gltf", 0.3)
     scene.add(table)
@@ -205,6 +201,42 @@ function generateWater(width, length){
         }
     );
     return water;
+}
+
+
+function generateDeskLamp() {
+    // Load a tablelamp modell imported from blender
+    var tableLamp = loadGLTFModell("TischlampeRed.glb", 0.1)
+    tableLamp.position.set(-1.1,1.8,-2)
+    tableLamp.scale.set(2, 2, 2)
+    tableLamp.rotation.y = Math.PI / 6
+
+    var sphereGeometry = new THREE.SphereGeometry(0.15, 32, 16);
+    var sphereMaterial = new THREE.MeshBasicMaterial( { color: 0xffffbb } )
+    var lightbulb = new THREE.Mesh( sphereGeometry, sphereMaterial )
+    lightbulb.position.set(-0.75, 3.2, -1.4)
+
+    // Add point light to lamp
+    var spotlight = new THREE.SpotLight( 
+        0xffffbb, // color
+        1, // intensity
+        10, // distance
+        Math.PI/4.5, // angle (upper bound is Math.PI/2)
+        0.1, // penumbra
+        1, // decay = dims alogn the distance
+    )
+    spotlight.position.set(-0.75, 3.2, -1.4)
+    spotlight.shadowMapVisible = true
+
+    // var spotlightHelper = new THREE.SpotLightHelper(spotlight)
+    
+    var group = new THREE.Group()
+    group.add(tableLamp)
+    group.add(lightbulb)
+    group.add(spotlight)
+    // group.add(spotlightHelper)
+
+    return group
 }
 
 main()
