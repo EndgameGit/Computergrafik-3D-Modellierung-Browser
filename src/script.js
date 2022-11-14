@@ -3,10 +3,9 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Water } from 'three/examples/jsm/objects/Water'
-import { SphereGeometry, WebGLUniformsGroups } from 'three'
 
 const clock = new THREE.Clock()
-const keyboard = new THREEx.KeyboardState();
+const keyboard = new THREEx.KeyboardState()
 
 async function main(){
 
@@ -31,10 +30,10 @@ async function main(){
 
     // Add an orbitcontrol class instance
     var controls = new OrbitControls(camera, renderer.domElement)
-    controls.maxPolarAngle = Math.PI * 0.495;
-    controls.target.set( 0, 2, 0 );
-    controls.minDistance = 4.0;
-    controls.maxDistance = 10.0;
+    controls.maxPolarAngle = Math.PI * 0.495
+    controls.target.set( 0, 2, 0 )
+    controls.minDistance = 4.0
+    controls.maxDistance = 10.0
 
     // Add an ambient light
     var ambientLight = generateAmbientLight(0xffffff, 0.2)
@@ -50,11 +49,11 @@ async function main(){
     scene.add(generatePlanet("venus.jpg", -15,6,-25))
 
     // Add water
-    var water = generateWater();
-    water.name = "water";
-    water.rotation.x = - Math.PI / 2;
-    water.position.set(1,2.5,0);
-	scene.add(water);
+    var water = generateWater()
+    water.name = "water"
+    water.rotation.x = - Math.PI / 2
+    water.position.set(1,2.5,0)
+	scene.add(water)
 
 
     // Add a floor to the the scene
@@ -62,15 +61,15 @@ async function main(){
     floor.name = "floor"
     scene.add(floor)
     floor.rotation.x = Math.PI/2
-
-    // Load a tablelamp modell imported from blender
-    var deskLamp = await generateDeskLamp()
-    deskLamp.position.set(0, 0, 0)
-    scene.add(deskLamp)
+    
 
     // Load the table modell from blender
     var [table, tableBox] = await loadGLTFModell("NewTisch/NewTisch.gltf", 0.4)
     scene.add(table)
+
+    // Load a tablelamp modell imported from blender
+    var deskLamp = await generateDeskLamp(2, Math.PI/2, -tableBox.max.x + 0.5, tableBox.max.y, 0)
+    scene.add(deskLamp)
     
 
     //add a test car
@@ -78,7 +77,7 @@ async function main(){
     car.name= "car"
     scene.add(car)
     //place the car on the table
-    car.position.set(0,tableBox.max.y,0);
+    car.position.set(0,tableBox.max.y,0)
 
     // Camera is by default set to (0,0,0) -> Change position and view
     // camera.position.set(0,tableBox.max.y+0.2,-0.2)
@@ -210,8 +209,8 @@ async function loadGLTFModell(filename, scale){
     var gltf = await loader.loadAsync( 'models/'+filename)
     gltf.scene.scale.set(scale *gltf.scene.scale.x, scale *gltf.scene.scale.y, scale *gltf.scene.scale.z)
     modell.add( gltf.scene )
-    modell.traverse( function( node ) { if ( node instanceof THREE.Mesh ) { node.castShadow = true; } } );
-    bbox.setFromObject(modell);
+    modell.traverse( function( node ) { if ( node instanceof THREE.Mesh ) { node.castShadow = true; } } )
+    bbox.setFromObject(modell)
     
     return [modell, bbox]
 }
@@ -234,41 +233,44 @@ function generateWater(width, length){
             distortionScale: 1.7
         }
     );
-    return water;
+    return water
 }
 
 
-async function generateDeskLamp() {
+async function generateDeskLamp(scale, rotationY, x, y, z) {
     // Load a tablelamp modell imported from blender
     var [tableLamp, tableLampBox] = await loadGLTFModell("TischlampeRed.glb", 0.1)
-    tableLamp.position.set(-1.1,1.8,-2)
-    tableLamp.scale.set(2, 2, 2)
-    tableLamp.rotation.y = Math.PI / 6
 
-    var sphereGeometry = new THREE.SphereGeometry(0.15, 32, 16);
+    var sphereGeometry = new THREE.SphereGeometry(0.08, 32, 16)
     var sphereMaterial = new THREE.MeshBasicMaterial( { color: 0xffffbb } )
     var lightbulb = new THREE.Mesh( sphereGeometry, sphereMaterial )
-    lightbulb.position.set(-0.75, 3.2, -1.4)
+    lightbulb.position.set(0, 0.71, 0.35)
 
     // Add point light to lamp
     var spotlight = new THREE.SpotLight( 
         0xffffbb, // color
         1, // intensity
-        10, // distance
-        Math.PI/4.5, // angle (upper bound is Math.PI/2)
+        20, // distance
+        Math.PI/4, // angle (upper bound is Math.PI/2)
         0.1, // penumbra
         1, // decay = dims alogn the distance
     )
-    spotlight.position.set(-0.75, 3.2, -1.4)
+    spotlight.position.set(0, 0.71, 0.35)
     spotlight.castShadow = true
 
-    // var spotlightHelper = new THREE.SpotLightHelper(spotlight)
+    var targetObject = new THREE.Object3D()
+    targetObject.position.set(0, 0, 1)
+    spotlight.target = targetObject
     
     var group = new THREE.Group()
     group.add(tableLamp)
     group.add(lightbulb)
     group.add(spotlight)
-    // group.add(spotlightHelper)
+    group.add(targetObject)
+
+    group.scale.set(scale, scale, scale)
+    group.position.set(x, y, z)
+    group.rotation.y = rotationY
 
     return group
 }
