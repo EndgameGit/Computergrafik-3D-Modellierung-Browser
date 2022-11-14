@@ -209,7 +209,10 @@ async function loadGLTFModell(filename, scale){
     var gltf = await loader.loadAsync( 'models/'+filename)
     gltf.scene.scale.set(scale *gltf.scene.scale.x, scale *gltf.scene.scale.y, scale *gltf.scene.scale.z)
     modell.add( gltf.scene )
-    modell.traverse( function( node ) { if ( node instanceof THREE.Mesh ) { node.castShadow = true; } } )
+    modell.traverse( function( node ) { if ( node instanceof THREE.Mesh ) { 
+        node.castShadow = true;
+        node.receiveShadow = true;
+    } } )
     bbox.setFromObject(modell)
     
     return [modell, bbox]
