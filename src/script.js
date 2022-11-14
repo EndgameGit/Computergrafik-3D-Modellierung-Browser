@@ -3,10 +3,12 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Water } from 'three/examples/jsm/objects/Water'
+// import { Keyboard } from '../static/libextern/threex.keyboardstate.js'
 
 const clock = new THREE.Clock()
+const keyboard = new THREEx.KeyboardState();
 
-function main(){
+async function main(){
 
     // Create an instance of the WebGL Renderer as a tool that three.js uses to alocate space on the webpage
     var renderer = new THREE.WebGLRenderer({
@@ -23,21 +25,14 @@ function main(){
     var camera = new THREE.PerspectiveCamera(
         45,                                     // Field of View (normally between 40 and 80)
         window.innerWidth/window.innerHeight,   // Site Ratio (aspect)
-        1,                                      // Near clipping plane
+        0.1,                                      // Near clipping plane
         1000                                    // Far clipping plane
     )
-
-    // Camera is by default set to (0,0,0) -> Change position and view
-    camera.position.x = 1
-    camera.position.y = 5
-    camera.position.z = 5
-    // Changes the view of the camera
-    camera.lookAt(new THREE.Vector3(0,1,0))
 
     // Add an orbitcontrol class instance
     var controls = new OrbitControls(camera, renderer.domElement)
     controls.maxPolarAngle = Math.PI * 0.495;
-    controls.target.set( 0, 1, 0 );
+    controls.target.set( 0, 2, 0 );
     controls.minDistance = 4.0;
     controls.maxDistance = 10.0;
 
@@ -61,7 +56,7 @@ function main(){
     var water = generateWater();
     water.name = "water";
     water.rotation.x = - Math.PI / 2;
-    water.position.y = 2;
+    water.position.set(1,2.5,0);
 	scene.add(water);
 
 
@@ -71,20 +66,36 @@ function main(){
     scene.add(floor)
     floor.rotation.x = Math.PI/2
 
-    // Load a tablelamp modell imported from blender
-    var tableLamp = loadGLTFModell("TischlampeRed.glb", 0.1)
-    scene.add( tableLamp )
-    tableLamp.position.set(0,2,0)
     // Load the table modell from blender
-    var table = loadGLTFModell("Tisch.gltf", 0.3)
+    var [table, tableBox] = await loadGLTFModell("Tisch.gltf", 0.4)
     scene.add(table)
+    
+    // Load a tablelamp modell imported from blender
+    var [tableLamp, tableLampBox] = await loadGLTFModell("TischlampeRed.glb", 0.2)
+    scene.add( tableLamp )
+    tableLamp.position.set(1,tableBox.max.y,0)
 
+    //add a test car
+    var [car, carBox] = await loadGLTFModell("sportcar.017.glb", 0.002)
+    car.name= "car"
+    scene.add(car)
+    //place the car on the table
+    car.position.set(0,tableBox.max.y,0);
+
+    // Camera is by default set to (0,0,0) -> Change position and view
+    // camera.position.set(0,tableBox.max.y+0.2,-0.2)
+    // camera.rotation.x = 2*Math.PI
+    // camera.rotation.y = Math.PI
+    // Changes the view of the camera
+    // camera.lookAt(new THREE.Vector3(0,1,0))
+    
     //animate the scene
     update(renderer, scene, camera, controls)
 }
 
 function update(renderer, scene, camera, controls){
     renderer.render(scene, camera)
+    controls.update()
 
     // var floor = scene.getObjectByName("floor")
     // scene.children[0].rotation.y += 0.002
@@ -93,12 +104,24 @@ function update(renderer, scene, camera, controls){
     //     child.position.x += 0.001
     // })
 
-    var step = 50*clock.getDelta()
+    var step = 5*clock.getDelta()
+    var car = scene.getObjectByName("car")
+    if(keyboard.pressed("W")){
+        car.translateZ(step)
+    }
+    if(keyboard.pressed("S")){
+        car.translateZ(-step)
+    }
+    if(keyboard.pressed("W+A")){
+        car.rotation.y += 0.1;
+    }
+    if(keyboard.pressed("W+D")){
+        car.rotation.y -= 0.1;
+    }
 
     var water = scene.getObjectByName("water")
     water.material.uniforms[ 'time' ].value += 1.0 / 60.0
 
-    controls.update()
 
     requestAnimationFrame(function(){
         update(renderer, scene, camera, controls)
@@ -176,14 +199,17 @@ function generateFloor(w, d){
 }
 
 
-function loadGLTFModell(filename, scale){
+async function loadGLTFModell(filename, scale){
     var loader = new GLTFLoader()
     var modell = new THREE.Object3D()
-    loader.load( 'models/'+filename, function ( gltf ) {
-        gltf.scene.scale.set(scale *gltf.scene.scale.x, scale *gltf.scene.scale.y, scale *gltf.scene.scale.z)
-        modell.add( gltf.scene )
-    })
-    return modell
+    var bbox = new THREE.Box3()
+    var gltf = await loader.loadAsync( 'models/'+filename)
+    gltf.scene.scale.set(scale *gltf.scene.scale.x, scale *gltf.scene.scale.y, scale *gltf.scene.scale.z)
+    modell.add( gltf.scene )
+    modell.traverse( function( node ) { if ( node instanceof THREE.Mesh ) { node.castShadow = true; } } );
+    bbox.setFromObject(modell);
+    
+    return [modell, bbox]
 }
 
 
