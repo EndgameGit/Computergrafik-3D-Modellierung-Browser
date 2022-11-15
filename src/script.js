@@ -7,6 +7,7 @@ import { GUI } from 'dat.gui'
 
 const clock = new THREE.Clock()
 const keyboard = new THREEx.KeyboardState()
+var activeCamera
 
 async function main(){
 
@@ -104,30 +105,27 @@ async function main(){
         camera: cameraViews[0]
     }
 
-    var activeCamera = camera
+    activeCamera = camera
 
     var gui = new GUI()
     gui.add(settings, "camera", cameraViews).onChange( function() {
         if (settings.camera == "orbitcontrol") {
             console.log("orbitcontrol")
             activeCamera = camera
-            update(renderer, scene, activeCamera, controls)
         }
         if (settings.camera == "first-person") {
             console.log("first-person")
             activeCamera = firstPersonCamera
-            update(renderer, scene, activeCamera, controls)
         }
     });
 
-    // //animate the scene
-    update(renderer, scene, activeCamera, controls)
+    //animate the scene
+    update(renderer, scene, controls)
 }
 
-function update(renderer, scene, camera, controls){
+function update(renderer, scene, controls){
 
-    
-    renderer.render(scene, camera)
+    renderer.render(scene, activeCamera)
     controls.update()
 
     // var floor = scene.getObjectByName("floor")
@@ -164,7 +162,7 @@ function update(renderer, scene, camera, controls){
 
 
     requestAnimationFrame(function(){
-        update(renderer, scene, camera, controls)
+        update(renderer, scene, controls)
     })
 }
 
@@ -174,15 +172,6 @@ function generateAmbientLight(color, intensity){
     var ambientLight = new THREE.AmbientLight(color, intensity)
 
     return ambientLight
-}
-
-
-function generatePointLight(color, intensity){
-    // Generates a point light as a light source
-    var pointLight = new THREE.PointLight(color, intensity)
-    pointLight.castShadow = true
-
-    return pointLight
 }
 
 
