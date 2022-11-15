@@ -142,25 +142,29 @@ function update(renderer, scene, controls){
 
     var step = 5*clock.getDelta()
     var car = scene.getObjectByName("car")
-    // camera.position.set(car.position)
-    if(keyboard.pressed("W")){
-        car.translateZ(step)
+    if(car.position.x < 14 && car.position.x > -14 && car.position.z< 14 && car.position.z > -14){
+        if(keyboard.pressed("W")){
+            car.translateZ(step)
+        }
+        if(keyboard.pressed("S")){
+            car.translateZ(-step)
+        }
+        if(keyboard.pressed("W+A")){
+            car.rotation.y += 0.1;
+        }
+        if(keyboard.pressed("W+D")){
+            car.rotation.y -= 0.1;
+        }
+        if(keyboard.pressed("S+D")){
+            car.rotation.y += 0.1;
+        }
+        if(keyboard.pressed("S+A")){
+            car.rotation.y -= 0.1;
+        }
+    }else{
+        car.position.set(0,0,0)
     }
-    if(keyboard.pressed("S")){
-        car.translateZ(-step)
-    }
-    if(keyboard.pressed("W+A")){
-        car.rotation.y += 0.1;
-    }
-    if(keyboard.pressed("W+D")){
-        car.rotation.y -= 0.1;
-    }
-    if(keyboard.pressed("S+D")){
-        car.rotation.y += 0.1;
-    }
-    if(keyboard.pressed("S+A")){
-        car.rotation.y -= 0.1;
-    }
+    
 
     var water = scene.getObjectByName("water")
     water.material.uniforms[ 'time' ].value += 1.0 / 60.0
