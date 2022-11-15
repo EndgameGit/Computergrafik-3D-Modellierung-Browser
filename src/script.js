@@ -2,6 +2,7 @@ import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { Water } from 'three/examples/jsm/objects/Water'
 import { GUI } from 'dat.gui'
 
@@ -92,6 +93,9 @@ async function main(){
     scene.add(car)
     //place the car on the table
     car.position.set(0,0,0)
+
+    // var objLoader = new OBJLoader();
+    // objLoader.load("..\static\models\Armchair_Monti_156__corona.obj")
 
 
     var firstPersonCamera = new THREE.PerspectiveCamera(
