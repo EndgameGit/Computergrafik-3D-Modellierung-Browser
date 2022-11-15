@@ -80,11 +80,11 @@ async function main(){
     
 
     //add a test car
-    var [car, carBox] = await loadGLTFModell("sportcar.017.glb", 0.001)
+    var [car, carBox] = await loadGLTFModell("sportcar.017.glb", 0.002)
     car.name= "car"
     scene.add(car)
     //place the car on the table
-    car.position.set(0,tableBox.max.y-0.4,0)
+    car.position.set(0,0,0)
 
 
     var firstPersonCamera = new THREE.PerspectiveCamera(
@@ -93,7 +93,7 @@ async function main(){
         0.1,                                      // Near clipping plane
         1000                                    // Far clipping plane
     )
-    firstPersonCamera.position.set(0, tableBox.max.y + carBox.max.y, 0)
+    firstPersonCamera.position.set(0, carBox.max.y, 0)
 
     // Camera is by default set to (0,0,0) -> Change position and view
     // firstPersonCamera.position.set(0,tableBox.max.y+0.2,-0.2)
