@@ -49,10 +49,10 @@ async function main(){
     scene.add(generatePlanet("venus.jpg", -15,6,-25))
 
     // Add water
-    var water = generateWater()
+    var water = generateWater(2,2)
     water.name = "water"
     water.rotation.x = - Math.PI / 2
-    water.position.set(1,2.5,0)
+    water.position.set(0,2.25,0)
 	scene.add(water)
 
 
@@ -64,20 +64,20 @@ async function main(){
     
 
     // Load the table modell from blender
-    var [table, tableBox] = await loadGLTFModell("NewTisch/NewTisch.gltf", 0.4)
+    var [table, tableBox] = await loadGLTFModell("Tisch/NewestTisch.gltf", 0.7)
     scene.add(table)
 
     // Load a tablelamp modell imported from blender
-    var deskLamp = await generateDeskLamp(2, Math.PI/2, -tableBox.max.x + 0.5, tableBox.max.y, 0)
+    var deskLamp = await generateDeskLamp(2, 3*Math.PI/4, -tableBox.max.x + 0.5, tableBox.max.y-0.4, 2.3)
     scene.add(deskLamp)
     
 
     //add a test car
-    var [car, carBox] = await loadGLTFModell("sportcar.017.glb", 0.002)
+    var [car, carBox] = await loadGLTFModell("sportcar.017.glb", 0.001)
     car.name= "car"
     scene.add(car)
     //place the car on the table
-    car.position.set(0,tableBox.max.y,0)
+    car.position.set(0,tableBox.max.y-0.4,0)
 
     // Camera is by default set to (0,0,0) -> Change position and view
     // camera.position.set(0,tableBox.max.y+0.2,-0.2)
