@@ -27,16 +27,21 @@ async function main(){
         0.1,                                      // Near clipping plane
         1000                                    // Far clipping plane
     )
+    camera.position.set(7, 7, 0)
+
 
     // Add an orbitcontrol class instance
     var controls = new OrbitControls(camera, renderer.domElement)
     controls.maxPolarAngle = Math.PI * 0.495
-    controls.target.set( 0, 2, 0 )
+    controls.target.set(0, 2, 0)
     controls.minDistance = 4.0
     controls.maxDistance = 10.0
 
+    const axesHelper = new THREE.AxesHelper( 5 );
+    scene.add( axesHelper );
+
     // Add an ambient light
-    var ambientLight = generateAmbientLight(0xffffff, 0.2)
+    var ambientLight = generateAmbientLight(0xffffff, 0.1)
     scene.add(ambientLight)
 
     // Add a background to the scene
@@ -68,7 +73,7 @@ async function main(){
     scene.add(table)
 
     // Load a tablelamp modell imported from blender
-    var deskLamp = await generateDeskLamp(2, 3*Math.PI/4, -tableBox.max.x + 0.5, tableBox.max.y-0.4, 2.3)
+    var deskLamp = await generateDeskLamp(2, 8*Math.PI/10, -tableBox.max.x + 0.4, tableBox.max.y-0.4, 2.4)
     scene.add(deskLamp)
     
 
