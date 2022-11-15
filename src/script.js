@@ -96,16 +96,17 @@ async function main(){
     car.position.set(0,0,0)
 
     var mtlLoader = new MTLLoader()
-    mtlLoader.load("models/Armchair_Monti_156__corona.mtl", function(materials)
+    mtlLoader.load("models/armchair/Armchair_Monti_156__corona.mtl", function(materials)
     {
         materials.preload();
         var objLoader = new OBJLoader();
         objLoader.setMaterials(materials);
-        objLoader.load("models/Armchair_Monti_156__corona.obj", function(object)
+        objLoader.load("models/armchair/Armchair_Monti_156__corona.obj", function(object)
         {    
             var armchair = object;
-            armchair.scale.set(0.1,0.1,0.1)
-            // scene.add( armchair );
+            armchair.scale.set(0.03,0.03,0.03)
+            armchair.position.set(10,0,-8)
+            scene.add( armchair );
         });
     });
     // var objLoader = new OBJLoader();
