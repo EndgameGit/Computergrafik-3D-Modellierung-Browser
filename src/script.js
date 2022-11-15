@@ -3,9 +3,11 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Water } from 'three/examples/jsm/objects/Water'
+import { GUI } from 'dat.gui'
 
 const clock = new THREE.Clock()
 const keyboard = new THREEx.KeyboardState()
+var activeCamera
 
 async function main(){
 
@@ -84,19 +86,51 @@ async function main(){
     //place the car on the table
     car.position.set(0,tableBox.max.y-0.4,0)
 
+
+    var firstPersonCamera = new THREE.PerspectiveCamera(
+        45,                                     // Field of View (normally between 40 and 80)
+        window.innerWidth/window.innerHeight,   // Site Ratio (aspect)
+        0.1,                                      // Near clipping plane
+        1000                                    // Far clipping plane
+    )
+    firstPersonCamera.position.set(0, tableBox.max.y + carBox.max.y, 0)
+
     // Camera is by default set to (0,0,0) -> Change position and view
-    // camera.position.set(0,tableBox.max.y+0.2,-0.2)
-    // camera.rotation.x = 2*Math.PI
-    // camera.rotation.y = Math.PI
-    // Changes the view of the camera
-    // camera.lookAt(new THREE.Vector3(0,1,0))
-    
+    // firstPersonCamera.position.set(0,tableBox.max.y+0.2,-0.2)
+    // firstPersonCamera.rotation.x = Math.PI
+    firstPersonCamera.rotation.y = Math.PI
+    car.attach(firstPersonCamera)
+
+    // Changes the view of the firstPersonCamera
+    // firstPersonCamera.lookAt(new THREE.Vector3(0,1,0))
+
+    var cameraViews = ["orbitcontrol", "first-person"]
+
+    var settings = {
+        camera: cameraViews[0]
+    }
+
+    activeCamera = camera
+
+    var gui = new GUI()
+    gui.add(settings, "camera", cameraViews).onChange( function() {
+        if (settings.camera == "orbitcontrol") {
+            console.log("orbitcontrol")
+            activeCamera = camera
+        }
+        if (settings.camera == "first-person") {
+            console.log("first-person")
+            activeCamera = firstPersonCamera
+        }
+    });
+
     //animate the scene
-    update(renderer, scene, camera, controls)
+    update(renderer, scene, controls)
 }
 
-function update(renderer, scene, camera, controls){
-    renderer.render(scene, camera)
+function update(renderer, scene, controls){
+
+    renderer.render(scene, activeCamera)
     controls.update()
 
     // var floor = scene.getObjectByName("floor")
@@ -108,6 +142,7 @@ function update(renderer, scene, camera, controls){
 
     var step = 5*clock.getDelta()
     var car = scene.getObjectByName("car")
+    // camera.position.set(car.position)
     if(keyboard.pressed("W")){
         car.translateZ(step)
     }
@@ -132,7 +167,7 @@ function update(renderer, scene, camera, controls){
 
 
     requestAnimationFrame(function(){
-        update(renderer, scene, camera, controls)
+        update(renderer, scene, controls)
     })
 }
 
@@ -142,15 +177,6 @@ function generateAmbientLight(color, intensity){
     var ambientLight = new THREE.AmbientLight(color, intensity)
 
     return ambientLight
-}
-
-
-function generatePointLight(color, intensity){
-    // Generates a point light as a light source
-    var pointLight = new THREE.PointLight(color, intensity)
-    pointLight.castShadow = true
-
-    return pointLight
 }
 
 
