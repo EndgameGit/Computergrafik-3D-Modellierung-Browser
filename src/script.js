@@ -7,7 +7,7 @@ import { GUI } from 'dat.gui'
 
 const clock = new THREE.Clock()
 const keyboard = new THREEx.KeyboardState()
-var activeCamera
+var activeCamera, mixer
 
 async function main(){
 
@@ -71,8 +71,15 @@ async function main(){
     
 
     // Load the table modell from blender
-    var [table, tableBox] = await loadGLTFModell("Tisch/NewestTisch.gltf", 0.7)
+    var [table, tableBox] = await loadGLTFModell("TischAnimation/NewestTisch.gltf", 0.7)
     scene.add(table)
+    mixer = new THREE.AnimationMixer( table );
+    table.animations.forEach( ( clip ) => {
+        
+        mixer.clipAction( clip ).play();
+        
+    } );
+    
 
     // Load a tablelamp modell imported from blender
     var deskLamp = await generateDeskLamp(2, 8*Math.PI/10, -tableBox.max.x + 0.4, tableBox.max.y-0.4, 2.4)
@@ -130,8 +137,10 @@ async function main(){
 
 function update(renderer, scene, controls){
 
+    var step = 5*clock.getDelta()
     renderer.render(scene, activeCamera)
     controls.update()
+    mixer.update( step )
 
     // var floor = scene.getObjectByName("floor")
     // scene.children[0].rotation.y += 0.002
@@ -140,7 +149,7 @@ function update(renderer, scene, controls){
     //     child.position.x += 0.001
     // })
 
-    var step = 5*clock.getDelta()
+    
     var car = scene.getObjectByName("car")
     if(car.position.x < 14 && car.position.x > -14 && car.position.z< 14 && car.position.z > -14){
         if(keyboard.pressed("W")){
