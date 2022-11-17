@@ -2,12 +2,14 @@ import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 import { Water } from 'three/examples/jsm/objects/Water'
 import { GUI } from 'dat.gui'
 
 const clock = new THREE.Clock()
 const keyboard = new THREEx.KeyboardState()
-var activeCamera
+var activeCamera, mixer
 
 async function main(){
 
@@ -71,7 +73,7 @@ async function main(){
     
 
     // Load the table modell from blender
-    var [table, tableBox] = await loadGLTFModell("Tisch/NewestTisch.gltf", 0.7)
+    var [table, tableBox] = await loadGLTFModell("TischAnimation/NewestTisch.gltf", 0.7)
     scene.add(table)
     var tableCollisionGeometry = new THREE.BoxGeometry(0.25, 0.25, 0.25)
     var tableCollisionMaterial = new THREE.MeshBasicMaterial({color: 0xffffff})
@@ -114,6 +116,33 @@ async function main(){
     var ball = generateBall(0.25, 0xff00ff, 0, 0.25, 2)
     ball.name = "ball"
     scene.add(ball)
+    var objLoader = new OBJLoader();
+    
+    objLoader.load("models/armchair/Armchair_Monti_156__corona.obj", function(object)
+    {    
+        var armchair = object;
+        armchair.scale.set(0.03,0.03,0.03)
+        armchair.position.set(10,0,-8)
+        scene.add( armchair );
+    });
+
+    // var mtlLoader = new MTLLoader()
+    // mtlLoader.load("models/armchair/Armchair_Monti_156__corona.mtl", function(materials)
+    // {
+    //     materials.preload();
+    //     var objLoader = new OBJLoader();
+    //     objLoader.setMaterials(materials);
+    //     objLoader.load("models/armchair/Armchair_Monti_156__corona.obj", function(object)
+    //     {    
+    //         var armchair = object;
+    //         armchair.scale.set(0.03,0.03,0.03)
+    //         armchair.position.set(10,0,-8)
+    //         scene.add( armchair );
+    //     });
+    // });
+    // var objLoader = new OBJLoader();
+    // objLoader.load("..\static\models\Armchair_Monti_156__corona.obj")
+
 
     var firstPersonCamera = new THREE.PerspectiveCamera(
         45,                                     // Field of View (normally between 40 and 80)
@@ -155,11 +184,18 @@ async function main(){
     //animate the scene
     update(renderer, scene, controls)
 }
+let speed = 0;
+let rotationValue = 0.4
+let maxTurning = 0.03
 
 function update(renderer, scene, controls){
 
+    var step = clock.getDelta()
     renderer.render(scene, activeCamera)
     controls.update()
+    if (mixer != null) {
+        mixer.update(step);
+    };
 
     // var floor = scene.getObjectByName("floor")
     // scene.children[0].rotation.y += 0.002
@@ -168,28 +204,35 @@ function update(renderer, scene, controls){
     //     child.position.x += 0.001
     // })
 
-    var step = 5*clock.getDelta()
+    
     var car = scene.getObjectByName("car")
     var ball = scene.getObjectByName("ball")
-    // camera.position.set(car.position)
-    if(keyboard.pressed("W")){
-        car.translateZ(step)
+    
+    if(car.position.x < 14.8 && car.position.x > -14.8 && car.position.z< 14.8 && car.position.z > -14.8){
+        
+        if(keyboard.pressed("W")){
+            if(speed < 12) speed += 0.15
+        }else if(keyboard.pressed("S")){
+            if(speed > -6) speed -= 0.15
+        } else{
+            if(-0.1 < speed && speed < 0.1) speed = 0
+        }
+        if(keyboard.pressed("A")){
+            if(speed > 0.1) car.rotation.y += rotationValue/speed > maxTurning ? maxTurning : rotationValue/speed;
+            if(speed < -0.1) car.rotation.y -= rotationValue/speed > maxTurning ? maxTurning : rotationValue/speed;
+        }
+        if(keyboard.pressed("D")){
+            if(speed > 0.1) car.rotation.y -= rotationValue/speed > maxTurning ? maxTurning : rotationValue/speed;
+            if(speed < -0.1) car.rotation.y += rotationValue/speed > maxTurning ? maxTurning : rotationValue/speed;
+        }
+    }else{
+        car.translateZ(-speed*2*step)
+        speed = 0;
     }
-    if(keyboard.pressed("S")){
-        car.translateZ(-step)
-    }
-    if(keyboard.pressed("W+A")){
-        car.rotation.y += 0.1;
-    }
-    if(keyboard.pressed("W+D")){
-        car.rotation.y -= 0.1;
-    }
-    if(keyboard.pressed("S+D")){
-        car.rotation.y += 0.1;
-    }
-    if(keyboard.pressed("S+A")){
-        car.rotation.y -= 0.1;
-    }
+    if(speed > 0) speed -= 0.1
+    if(speed < 0) speed += 0.1
+    car.translateZ(speed*step)
+    
 
     var water = scene.getObjectByName("water")
     water.material.uniforms[ 'time' ].value += 1.0 / 60.0
@@ -343,7 +386,15 @@ async function loadGLTFModell(filename, scale){
         node.receiveShadow = true;
     } } )
     bbox.setFromObject(modell)
-    
+    if(gltf.animations[0]){
+        mixer = new THREE.AnimationMixer( gltf.scene );
+        // let clip = gltf.animations[0];
+        console.log(gltf.animations)
+        
+        mixer.clipAction( gltf.animations[0] ).play();
+            
+        
+    }    
     return [modell, bbox]
 }
 
