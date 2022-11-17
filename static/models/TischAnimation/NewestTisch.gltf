@@ -687,9 +687,16 @@
                         "node" : 5,
                         "path" : "rotation"
                     }
+                },
+                {
+                    "sampler" : 2,
+                    "target" : {
+                        "node" : 5,
+                        "path" : "scale"
+                    }
                 }
             ],
-            "name" : "IdeallinieAction.001",
+            "name" : "IdeallinieAction.002",
             "samplers" : [
                 {
                     "input" : 45,
@@ -700,6 +707,11 @@
                     "input" : 45,
                     "interpolation" : "LINEAR",
                     "output" : 47
+                },
+                {
+                    "input" : 45,
+                    "interpolation" : "LINEAR",
+                    "output" : 48
                 }
             ]
         }
@@ -1460,9 +1472,9 @@
         {
             "bufferView" : 45,
             "componentType" : 5126,
-            "count" : 101,
+            "count" : 100,
             "max" : [
-                4.166666666666667
+                4.125
             ],
             "min" : [
                 0
@@ -1472,14 +1484,20 @@
         {
             "bufferView" : 46,
             "componentType" : 5126,
-            "count" : 101,
+            "count" : 100,
             "type" : "VEC3"
         },
         {
             "bufferView" : 47,
             "componentType" : 5126,
-            "count" : 101,
+            "count" : 100,
             "type" : "VEC4"
+        },
+        {
+            "bufferView" : 48,
+            "componentType" : 5126,
+            "count" : 100,
+            "type" : "VEC3"
         }
     ],
     "bufferViews" : [
@@ -1755,18 +1773,23 @@
         },
         {
             "buffer" : 0,
-            "byteLength" : 404,
+            "byteLength" : 400,
             "byteOffset" : 1308056
         },
         {
             "buffer" : 0,
-            "byteLength" : 1212,
-            "byteOffset" : 1308460
+            "byteLength" : 1200,
+            "byteOffset" : 1308456
         },
         {
             "buffer" : 0,
-            "byteLength" : 1616,
-            "byteOffset" : 1309672
+            "byteLength" : 1600,
+            "byteOffset" : 1309656
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 1200,
+            "byteOffset" : 1311256
         }
     ],
     "samplers" : [
@@ -1777,7 +1800,7 @@
     ],
     "buffers" : [
         {
-            "byteLength" : 1311288,
+            "byteLength" : 1312456,
             "uri" : "NewestTisch.bin"
         }
     ]
