@@ -189,11 +189,11 @@ function update(renderer, scene, controls){
         }
         if(keyboard.pressed("A")){
             if(speed > 0.1) car.rotation.y += rotationValue/speed > maxTurning ? maxTurning : rotationValue/speed;
-            if(speed < -0.1) car.rotation.y -= 0.1;
+            if(speed < -0.1) car.rotation.y -= rotationValue/speed > maxTurning ? maxTurning : rotationValue/speed;
         }
         if(keyboard.pressed("D")){
             if(speed > 0.1) car.rotation.y -= rotationValue/speed > maxTurning ? maxTurning : rotationValue/speed;
-            if(speed < -0.1) car.rotation.y += 0.1;
+            if(speed < -0.1) car.rotation.y += rotationValue/speed > maxTurning ? maxTurning : rotationValue/speed;
         }
     }else{
         car.translateZ(-speed*2*step)
