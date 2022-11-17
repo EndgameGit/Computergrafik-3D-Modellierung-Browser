@@ -75,12 +75,6 @@ async function main(){
     // Load the table modell from blender
     var [table, tableBox] = await loadGLTFModell("TischAnimation/NewestTisch.gltf", 0.7)
     scene.add(table)
-    mixer = new THREE.AnimationMixer( table );
-    table.animations.forEach( ( clip ) => {
-        
-        mixer.clipAction( clip ).play();
-        
-    } );
     
 
     // Load a tablelamp modell imported from blender
@@ -169,7 +163,9 @@ function update(renderer, scene, controls){
     var step = 5*clock.getDelta()
     renderer.render(scene, activeCamera)
     controls.update()
-    mixer.update( step )
+    if (mixer != null) {
+        mixer.update(0.1*step);
+    };
 
     // var floor = scene.getObjectByName("floor")
     // scene.children[0].rotation.y += 0.002
@@ -287,7 +283,15 @@ async function loadGLTFModell(filename, scale){
         node.receiveShadow = true;
     } } )
     bbox.setFromObject(modell)
-    
+    if(gltf.animations[0]){
+        mixer = new THREE.AnimationMixer( gltf.scene );
+        // let clip = gltf.animations[0];
+        console.log(gltf.animations)
+        
+        mixer.clipAction( gltf.animations[0] ).play();
+            
+        
+    }    
     return [modell, bbox]
 }
 
