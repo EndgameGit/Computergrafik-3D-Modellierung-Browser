@@ -2,6 +2,7 @@ import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 import { Water } from 'three/examples/jsm/objects/Water'
@@ -78,6 +79,18 @@ async function main(){
     var deskLamp = await generateDeskLamp(2, 8*Math.PI/10, -tableBox.max.x + 0.4, tableBox.max.y-0.4, 2.4)
     scene.add(deskLamp)
     
+    var [bookshelf, bookshelfBox] = await loadGLTFModell("Old_Dusty_Bookshelf.glb", 3)
+    scene.add(bookshelf)
+    bookshelf.position.set(-10,0,-12)
+    bookshelf.rotation.y = 5*Math.PI/4
+    var bookshelf2 = bookshelf.clone()
+    scene.add(bookshelf2)
+    bookshelf2.position.set(-12,0,-10.4)
+
+    var [bookshelf, bookshelfBox] = await loadGLTFModell("black_leather_chair.gltf", 3)
+    scene.add(bookshelf)
+    bookshelf.position.set(3.5,0,-1)
+    bookshelf.rotation.y = 11*Math.PI/8
 
     //add a test car
     var [car, carBox] = await loadGLTFModell("sportcar.017.glb", 0.002)
@@ -86,15 +99,15 @@ async function main(){
     //place the car on the table
     car.position.set(0,0,0)
 
-    var objLoader = new OBJLoader();
+    // var objLoader = new OBJLoader();
     
-    objLoader.load("models/armchair/Armchair_Monti_156__corona.obj", function(object)
-    {    
-        var armchair = object;
-        armchair.scale.set(0.03,0.03,0.03)
-        armchair.position.set(10,0,-8)
-        scene.add( armchair );
-    });
+    // objLoader.load("models/3002242.obj", function(object)
+    // {    
+    //     var armchair = object;
+    //     armchair.scale.set(0.03,0.03,0.03)
+    //     armchair.position.set(10,0,-8)
+    //     scene.add( armchair );
+    // });
 
     // var mtlLoader = new MTLLoader()
     // mtlLoader.load("models/armchair/Armchair_Monti_156__corona.mtl", function(materials)
@@ -110,9 +123,6 @@ async function main(){
     //         scene.add( armchair );
     //     });
     // });
-    // var objLoader = new OBJLoader();
-    // objLoader.load("..\static\models\Armchair_Monti_156__corona.obj")
-
 
     var firstPersonCamera = new THREE.PerspectiveCamera(
         45,                                     // Field of View (normally between 40 and 80)
@@ -276,6 +286,9 @@ async function loadGLTFModell(filename, scale){
     var loader = new GLTFLoader()
     var modell = new THREE.Object3D()
     var bbox = new THREE.Box3()
+    var dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath( "libextern/draco/" );
+    loader.setDRACOLoader( dracoLoader );
     var gltf = await loader.loadAsync( 'models/'+filename)
     gltf.scene.scale.set(scale *gltf.scene.scale.x, scale *gltf.scene.scale.y, scale *gltf.scene.scale.z)
     modell.add( gltf.scene )
@@ -289,7 +302,7 @@ async function loadGLTFModell(filename, scale){
         // let clip = gltf.animations[0];
         console.log(gltf.animations)
         
-        mixer.clipAction( gltf.animations[0] ).play();
+        mixer.clipAction( gltf.animations[1] ).play();
             
         
     }    
