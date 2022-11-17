@@ -73,6 +73,29 @@ async function main(){
     // Load the table modell from blender
     var [table, tableBox] = await loadGLTFModell("Tisch/NewestTisch.gltf", 0.7)
     scene.add(table)
+    var tableCollisionGeometry = new THREE.BoxGeometry(0.25, 0.25, 0.25)
+    var tableCollisionMaterial = new THREE.MeshBasicMaterial({color: 0xffffff})
+
+    var tableCollision1 = new THREE.Mesh(tableCollisionGeometry, tableCollisionMaterial)
+    var tableCollision2 = new THREE.Mesh(tableCollisionGeometry, tableCollisionMaterial)
+    var tableCollision3 = new THREE.Mesh(tableCollisionGeometry, tableCollisionMaterial)
+    var tableCollision4 = new THREE.Mesh(tableCollisionGeometry, tableCollisionMaterial)
+
+    tableCollision1.name = "tableCollision1"
+    tableCollision2.name = "tableCollision2"
+    tableCollision3.name = "tableCollision3"
+    tableCollision4.name = "tableCollision4"
+
+    scene.add(tableCollision1)
+    scene.add(tableCollision2)
+    scene.add(tableCollision3)
+    scene.add(tableCollision4)
+
+    tableCollision1.position.set(1.25, 0, 2.25)
+    tableCollision2.position.set(-1.25, 0, 2.25)
+    tableCollision3.position.set(-1.25, 0, -2.25)
+    tableCollision4.position.set(1.25, 0, -2.25)
+
 
     // Load a tablelamp modell imported from blender
     var deskLamp = await generateDeskLamp(2, 8*Math.PI/10, -tableBox.max.x + 0.4, tableBox.max.y-0.4, 2.4)
@@ -173,11 +196,8 @@ function update(renderer, scene, controls){
 
     var carBB = generateBB(car)
     var ballBB = generateBB(ball)
-    
     var BBs = [carBB, ballBB]
-
     var dir = new THREE.Vector3() // direction vector
-
     BBs.forEach(bb => {
         // Filter out this bb from BBs
         const otherBBs = BBs.filter(other => other !== bb)
@@ -193,6 +213,32 @@ function update(renderer, scene, controls){
                 0.25,
                 ball.position.z + dir.z / 20
             )
+          }
+        })
+    })
+
+    var leg1 = scene.getObjectByName("tableCollision1")
+    var leg2 = scene.getObjectByName("tableCollision2")
+    var leg3 = scene.getObjectByName("tableCollision3")
+    var leg4 = scene.getObjectByName("tableCollision4")
+
+    var leg1BB = generateBB(leg1)
+    var leg2BB = generateBB(leg2)
+    var leg3BB = generateBB(leg3)
+    var leg4BB = generateBB(leg4)
+
+    var tableBBs = [carBB, leg1BB, leg2BB, leg3BB, leg4BB]
+
+    tableBBs.forEach(bb => {
+        // Filter out this bb from BBs
+        const otherBBs = tableBBs.filter(other => other !== bb)
+      
+        // Check if any of the other BBs intersects with this bb
+        otherBBs.forEach(other => {
+          if (bb.intersectsBox(other)) {
+            // Collision ! Do something
+            console.log('collision')
+            
           }
         })
     })
