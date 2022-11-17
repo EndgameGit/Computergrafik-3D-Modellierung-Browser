@@ -1,0 +1,77 @@
+# Blender 3.3.1 MTL File: 'NewestTisch.blend'
+# www.blender.org
+
+newmtl Material.003
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 0.001387 0.028425
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl Material.004
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.015324 0.015324 0.015324
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl aerial_grass_rock
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd /Users/benediktdorflein/DHBW/Computergrafik/Prüfungsaufgabe/Asset Library/Materials/AerialGrassRock/textures/aerial_grass_rock_diff_4k.jpg
+map_Ns /Users/benediktdorflein/DHBW/Computergrafik/Prüfungsaufgabe/Asset Library/Materials/AerialGrassRock/textures/aerial_grass_rock_rough_4k.jpg
+map_Bump -bm 1.000000 /Users/benediktdorflein/DHBW/Computergrafik/Prüfungsaufgabe/Asset Library/Materials/AerialGrassRock/textures/aerial_grass_rock_nor_gl_4k.exr
+
+newmtl wood_table_001
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd /Users/benediktdorflein/DHBW/Computergrafik/Prüfungsaufgabe/Asset Library/Materials/DarkWoodTable/textures/wood_table_001_diff_4k.jpg
+map_Ns /Users/benediktdorflein/DHBW/Computergrafik/Prüfungsaufgabe/Asset Library/Materials/DarkWoodTable/textures/wood_table_001_rough_4k.jpg
+map_Bump -bm 0.350000 /Users/benediktdorflein/DHBW/Computergrafik/Prüfungsaufgabe/Asset Library/Materials/DarkWoodTable/textures/wood_table_001_nor_gl_4k.exr
+
+newmtl wood_table_001.001
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd /Users/benediktdorflein/DHBW/Computergrafik/Prüfungsaufgabe/Asset Library/Materials/DarkWoodTable/textures/wood_table_001_diff_4k.jpg
+map_Ns /Users/benediktdorflein/DHBW/Computergrafik/Prüfungsaufgabe/Asset Library/Materials/DarkWoodTable/textures/wood_table_001_rough_4k.jpg
+map_Bump -bm 0.350000 /Users/benediktdorflein/DHBW/Computergrafik/Prüfungsaufgabe/Asset Library/Materials/DarkWoodTable/textures/wood_table_001_nor_gl_4k.exr
+
+newmtl wood_table_001.002
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd /Users/benediktdorflein/DHBW/Computergrafik/Prüfungsaufgabe/Asset Library/Materials/DarkWoodTable/textures/wood_table_001_diff_4k.jpg
+map_Ns /Users/benediktdorflein/DHBW/Computergrafik/Prüfungsaufgabe/Asset Library/Materials/DarkWoodTable/textures/wood_table_001_rough_4k.jpg
+map_Bump -bm 0.350000 /Users/benediktdorflein/DHBW/Computergrafik/Prüfungsaufgabe/Asset Library/Materials/DarkWoodTable/textures/wood_table_001_nor_gl_4k.exr
+
+newmtl wood_table_001.003
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd /Users/benediktdorflein/DHBW/Computergrafik/Prüfungsaufgabe/Asset Library/Materials/DarkWoodTable/textures/wood_table_001_diff_4k.jpg
+map_Ns /Users/benediktdorflein/DHBW/Computergrafik/Prüfungsaufgabe/Asset Library/Materials/DarkWoodTable/textures/wood_table_001_rough_4k.jpg
+map_Bump -bm 0.350000 /Users/benediktdorflein/DHBW/Computergrafik/Prüfungsaufgabe/Asset Library/Materials/DarkWoodTable/textures/wood_table_001_nor_gl_4k.exr
