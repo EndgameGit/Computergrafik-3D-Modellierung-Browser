@@ -85,7 +85,12 @@ async function main(){
     scene.add(car)
     //place the car on the table
     car.position.set(0,0,0)
+    
 
+    // Add ball
+    var ball = generateBall(0.25, 0xff00ff, 0, 0.25, 2)
+    ball.name = "ball"
+    scene.add(ball)
 
     var firstPersonCamera = new THREE.PerspectiveCamera(
         45,                                     // Field of View (normally between 40 and 80)
@@ -122,7 +127,7 @@ async function main(){
             console.log("first-person")
             activeCamera = firstPersonCamera
         }
-    });
+    }); 
 
     //animate the scene
     update(renderer, scene, controls)
@@ -142,6 +147,7 @@ function update(renderer, scene, controls){
 
     var step = 5*clock.getDelta()
     var car = scene.getObjectByName("car")
+    var ball = scene.getObjectByName("ball")
     // camera.position.set(car.position)
     if(keyboard.pressed("W")){
         car.translateZ(step)
@@ -165,6 +171,31 @@ function update(renderer, scene, controls){
     var water = scene.getObjectByName("water")
     water.material.uniforms[ 'time' ].value += 1.0 / 60.0
 
+    var carBB = generateBB(car)
+    var ballBB = generateBB(ball)
+    
+    var BBs = [carBB, ballBB]
+
+    var dir = new THREE.Vector3() // direction vector
+
+    BBs.forEach(bb => {
+        // Filter out this bb from BBs
+        const otherBBs = BBs.filter(other => other !== bb)
+      
+        // Check if any of the other BBs intersects with this bb
+        otherBBs.forEach(other => {
+          if (bb.intersectsBox(other)) {
+            // Collision ! Do something
+            console.log('collision')
+            dir.subVectors(ball.position, car.position).normalize()
+            ball.position.set(
+                ball.position.x + dir.x / 20,
+                0.25,
+                ball.position.z + dir.z / 20
+            )
+          }
+        })
+    })
 
     requestAnimationFrame(function(){
         update(renderer, scene, controls)
@@ -231,6 +262,27 @@ function generateFloor(w, d){
 
     return floor
 }
+
+
+function generateBall(r, color, x, y, z) {
+    var geometry = new THREE.SphereGeometry(r, 32, 16)
+    var material = new THREE.MeshStandardMaterial({ color: color })
+    var ball = new THREE.Mesh(geometry, material)
+
+    ball.position.set(x, y, z)
+    ball.castShadow = true
+    ball.receiveShadow = true
+
+    return ball
+}
+
+function generateBB(object) {
+    
+    var object_bb = new THREE.Box3().setFromObject(object, true)
+
+    return object_bb
+}
+
 
 
 async function loadGLTFModell(filename, scale){
