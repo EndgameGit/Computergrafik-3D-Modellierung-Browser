@@ -281,7 +281,10 @@ function update(renderer, scene, controls){
           if (bb.intersectsBox(other)) {
             // Collision ! Do something
             console.log('collision')
-            
+            if(keyboard.pressed("W")){
+                car.translateZ(-speed*2*step)
+                speed = 0;
+            }
           }
         })
     })
