@@ -76,7 +76,7 @@ async function main(){
     
 
     // Load a tablelamp modell imported from blender
-    var deskLamp = await generateDeskLamp(2, 8*Math.PI/10, -tableBox.max.x + 0.4, tableBox.max.y-0.4, 2.4)
+    var deskLamp = await generateDeskLamp(2, 8*Math.PI/10, -tableBox.max.x + 0.4, 2.34, 2.4)
     scene.add(deskLamp)
     
     var [bookshelf, bookshelfBox] = await loadGLTFModell("Old_Dusty_Bookshelf.glb", 3)
@@ -302,9 +302,12 @@ async function loadGLTFModell(filename, scale){
         // let clip = gltf.animations[0];
         console.log(gltf.animations)
         
-        mixer.clipAction( gltf.animations[1] ).play();
-            
-        
+        mixer.clipAction( gltf.animations[0] ).play();
+        mixer.clipAction( gltf.animations[2] ).play();
+        mixer.clipAction( gltf.animations[3] ).play();
+        mixer.clipAction( gltf.animations[4] ).play();
+        mixer.clipAction( gltf.animations[5] ).play();
+
     }    
     return [modell, bbox]
 }
