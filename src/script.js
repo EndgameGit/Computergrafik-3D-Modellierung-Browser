@@ -38,11 +38,8 @@ async function main(){
     var controls = new OrbitControls(camera, renderer.domElement)
     controls.maxPolarAngle = Math.PI * 0.495
     controls.target.set(0, 2, 0)
-    controls.minDistance = 4.0
-    controls.maxDistance = 10.0
-
-    const axesHelper = new THREE.AxesHelper( 5 );
-    scene.add( axesHelper );
+    controls.minDistance = 3.5
+    controls.maxDistance = 18.0
 
     // Add an ambient light
     var ambientLight = generateAmbientLight(0xffffff, 0.1)
