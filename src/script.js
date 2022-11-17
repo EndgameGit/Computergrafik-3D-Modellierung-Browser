@@ -157,14 +157,16 @@ async function main(){
     //animate the scene
     update(renderer, scene, controls)
 }
-
+let speed = 0;
+let rotationValue = 0.4
+let maxTurning = 0.03
 function update(renderer, scene, controls){
 
-    var step = 5*clock.getDelta()
+    var step = clock.getDelta()
     renderer.render(scene, activeCamera)
     controls.update()
     if (mixer != null) {
-        mixer.update(0.1*step);
+        mixer.update(step);
     };
 
     // var floor = scene.getObjectByName("floor")
@@ -176,28 +178,30 @@ function update(renderer, scene, controls){
 
     
     var car = scene.getObjectByName("car")
-    if(car.position.x < 14 && car.position.x > -14 && car.position.z< 14 && car.position.z > -14){
+    if(car.position.x < 14.8 && car.position.x > -14.8 && car.position.z< 14.8 && car.position.z > -14.8){
+        
         if(keyboard.pressed("W")){
-            car.translateZ(step)
+            if(speed < 12) speed += 0.15
+        }else if(keyboard.pressed("S")){
+            if(speed > -6) speed -= 0.15
+        } else{
+            if(-0.1 < speed && speed < 0.1) speed = 0
         }
-        if(keyboard.pressed("S")){
-            car.translateZ(-step)
+        if(keyboard.pressed("A")){
+            if(speed > 0.1) car.rotation.y += rotationValue/speed > maxTurning ? maxTurning : rotationValue/speed;
+            if(speed < -0.1) car.rotation.y -= 0.1;
         }
-        if(keyboard.pressed("W+A")){
-            car.rotation.y += 0.1;
-        }
-        if(keyboard.pressed("W+D")){
-            car.rotation.y -= 0.1;
-        }
-        if(keyboard.pressed("S+D")){
-            car.rotation.y += 0.1;
-        }
-        if(keyboard.pressed("S+A")){
-            car.rotation.y -= 0.1;
+        if(keyboard.pressed("D")){
+            if(speed > 0.1) car.rotation.y -= rotationValue/speed > maxTurning ? maxTurning : rotationValue/speed;
+            if(speed < -0.1) car.rotation.y += 0.1;
         }
     }else{
-        car.position.set(0,0,0)
+        car.translateZ(-speed*2*step)
+        speed = 0;
     }
+    if(speed > 0) speed -= 0.1
+    if(speed < 0) speed += 0.1
+    car.translateZ(speed*step)
     
 
     var water = scene.getObjectByName("water")
