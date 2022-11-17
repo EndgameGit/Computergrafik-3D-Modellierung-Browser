@@ -504,14 +504,14 @@
             "name" : "Tire4.001",
             "rotation" : [
                 0,
-                -0.04467695578932762,
+                -0.027491150423884392,
                 0,
-                0.9990015029907227
+                0.9996220469474792
             ],
             "translation" : [
-                -0.7457645535469055,
+                -0.6149774193763733,
                 0,
-                0.5122607946395874
+                0.4290369749069214
             ]
         },
         {
@@ -572,7 +572,7 @@
                     }
                 }
             ],
-            "name" : "Drive",
+            "name" : "Fahrjunge",
             "samplers" : [
                 {
                     "input" : 47,
@@ -588,6 +588,49 @@
                     "input" : 47,
                     "interpolation" : "LINEAR",
                     "output" : 50
+                }
+            ]
+        },
+        {
+            "channels" : [
+                {
+                    "sampler" : 0,
+                    "target" : {
+                        "node" : 3,
+                        "path" : "translation"
+                    }
+                },
+                {
+                    "sampler" : 1,
+                    "target" : {
+                        "node" : 3,
+                        "path" : "rotation"
+                    }
+                },
+                {
+                    "sampler" : 2,
+                    "target" : {
+                        "node" : 3,
+                        "path" : "scale"
+                    }
+                }
+            ],
+            "name" : "Drive",
+            "samplers" : [
+                {
+                    "input" : 47,
+                    "interpolation" : "LINEAR",
+                    "output" : 51
+                },
+                {
+                    "input" : 47,
+                    "interpolation" : "LINEAR",
+                    "output" : 52
+                },
+                {
+                    "input" : 47,
+                    "interpolation" : "LINEAR",
+                    "output" : 53
                 }
             ]
         }
@@ -1380,6 +1423,24 @@
             "componentType" : 5126,
             "count" : 1,
             "type" : "VEC3"
+        },
+        {
+            "bufferView" : 51,
+            "componentType" : 5126,
+            "count" : 1,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 52,
+            "componentType" : 5126,
+            "count" : 1,
+            "type" : "VEC4"
+        },
+        {
+            "bufferView" : 53,
+            "componentType" : 5126,
+            "count" : 1,
+            "type" : "VEC3"
         }
     ],
     "bufferViews" : [
@@ -1684,6 +1745,21 @@
             "buffer" : 0,
             "byteLength" : 12,
             "byteOffset" : 1417132
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 12,
+            "byteOffset" : 1417144
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 16,
+            "byteOffset" : 1417156
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 12,
+            "byteOffset" : 1417172
         }
     ],
     "samplers" : [
@@ -1694,7 +1770,7 @@
     ],
     "buffers" : [
         {
-            "byteLength" : 1417144,
+            "byteLength" : 1417184,
             "uri" : "NewestTisch.bin"
         }
     ]
