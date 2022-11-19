@@ -32,7 +32,7 @@ async function main(){
         0.1,                                      // Near clipping plane
         1000                                    // Far clipping plane
     )
-    camera.position.set(7, 7, 0)
+    camera.position.set(7, 7, 2)
 
 
     // Add an orbitcontrol class instance
@@ -87,42 +87,28 @@ async function main(){
     scene.add(bookshelf2)
     bookshelf2.position.set(-12,0,-10.4)
 
-    var [bookshelf, bookshelfBox] = await loadGLTFModell("black_leather_chair.gltf", 3)
-    scene.add(bookshelf)
-    bookshelf.position.set(3.5,0,-1)
-    bookshelf.rotation.y = 11*Math.PI/8
+    var [leatherchair,leatherchairBox] = await loadGLTFModell("black_leather_chair.gltf", 3)
+    scene.add(leatherchair)
+    leatherchair.position.set(3.5,0,-1)
+    leatherchair.rotation.y = 11*Math.PI/8
 
-    //add a test car
+    //add drive car
     var [car, carBox] = await loadGLTFModell("sportcar.017.glb", 0.002)
     car.name= "car"
     scene.add(car)
-    //place the car on the table
-    car.position.set(0,0,0)
+    //place the car
+    car.position.set(2,0,1)
 
-    // var objLoader = new OBJLoader();
-    
-    // objLoader.load("models/3002242.obj", function(object)
-    // {    
-    //     var armchair = object;
-    //     armchair.scale.set(0.03,0.03,0.03)
-    //     armchair.position.set(10,0,-8)
-    //     scene.add( armchair );
-    // });
-
-    // var mtlLoader = new MTLLoader()
-    // mtlLoader.load("models/armchair/Armchair_Monti_156__corona.mtl", function(materials)
-    // {
-    //     materials.preload();
-    //     var objLoader = new OBJLoader();
-    //     objLoader.setMaterials(materials);
-    //     objLoader.load("models/armchair/Armchair_Monti_156__corona.obj", function(object)
-    //     {    
-    //         var armchair = object;
-    //         armchair.scale.set(0.03,0.03,0.03)
-    //         armchair.position.set(10,0,-8)
-    //         scene.add( armchair );
-    //     });
-    // });
+    var plant = await loadOBJModell("10461_Yucca_Plant_v1_max2010_it2", 0.02)
+    scene.add(plant)
+    plant.position.set(10,0,-8)
+    plant.rotation.x = - Math.PI / 2
+    var plant2 = plant.clone()
+    scene.add(plant2)
+    plant2.position.set(10,0,8)
+    var plant3 = plant.clone()
+    scene.add(plant3)
+    plant3.position.set(-11,0,-6)
 
     var firstPersonCamera = new THREE.PerspectiveCamera(
         45,                                     // Field of View (normally between 40 and 80)
@@ -175,14 +161,6 @@ function update(renderer, scene, controls){
     if (mixer != null) {
         mixer.update(step);
     };
-
-    // var floor = scene.getObjectByName("floor")
-    // scene.children[0].rotation.y += 0.002
-    // floor.rotation.z += 0.001
-    // scene.traverse(function(child){
-    //     child.position.x += 0.001
-    // })
-
     
     var car = scene.getObjectByName("car")
     if(car.position.x < 14.8 && car.position.x > -14.8 && car.position.z< 14.8 && car.position.z > -14.8){
@@ -299,17 +277,28 @@ async function loadGLTFModell(filename, scale){
     bbox.setFromObject(modell)
     if(gltf.animations[0]){
         mixer = new THREE.AnimationMixer( gltf.scene );
-        // let clip = gltf.animations[0];
         console.log(gltf.animations)
         
         mixer.clipAction( gltf.animations[0] ).play();
+        mixer.clipAction( gltf.animations[1] ).play();
         mixer.clipAction( gltf.animations[2] ).play();
         mixer.clipAction( gltf.animations[3] ).play();
-        mixer.clipAction( gltf.animations[4] ).play();
-        mixer.clipAction( gltf.animations[5] ).play();
 
     }    
     return [modell, bbox]
+}
+
+async function loadOBJModell(filename, scale){
+    var mtlLoader = new MTLLoader()
+    var materials = await mtlLoader.loadAsync("models/"+filename+".mtl")
+    
+    // materials.preload();
+    var objLoader = new OBJLoader();
+    objLoader.setMaterials(materials);
+    var object = await objLoader.loadAsync("models/"+filename+".obj")
+    object.scale.set(scale,scale,scale)
+    return object;
+
 }
 
 
