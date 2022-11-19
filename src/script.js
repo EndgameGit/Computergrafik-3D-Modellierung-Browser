@@ -75,7 +75,7 @@ async function main(){
     // Load the table modell from blender
     var [table, tableBox] = await loadGLTFModell("TischAnimation/NewestTisch.gltf", 0.7)
     scene.add(table)
-    var tableCollisionGeometry = new THREE.BoxGeometry(0.25, 0.25, 0.25)
+    var tableCollisionGeometry = new THREE.BoxGeometry(0.29, 0.27, 0.27)
     var tableCollisionMaterial = new THREE.MeshBasicMaterial({color: 0xffffff})
 
     var tableCollision1 = new THREE.Mesh(tableCollisionGeometry, tableCollisionMaterial)
@@ -88,15 +88,20 @@ async function main(){
     tableCollision3.name = "tableCollision3"
     tableCollision4.name = "tableCollision4"
 
+    tableCollision1.visible = false
+    tableCollision2.visible = false
+    tableCollision3.visible = false
+    tableCollision4.visible = false
+
     scene.add(tableCollision1)
     scene.add(tableCollision2)
     scene.add(tableCollision3)
     scene.add(tableCollision4)
 
-    tableCollision1.position.set(1.25, 0, 2.25)
-    tableCollision2.position.set(-1.25, 0, 2.25)
-    tableCollision3.position.set(-1.25, 0, -2.25)
-    tableCollision4.position.set(1.25, 0, -2.25)
+    tableCollision1.position.set(1.21, 0, 2.27)
+    tableCollision2.position.set(-1.21, 0, 2.27)
+    tableCollision3.position.set(-1.21, 0, -2.27)
+    tableCollision4.position.set(1.21, 0, -2.27)
 
 
     // Load a tablelamp modell imported from blender
@@ -282,6 +287,10 @@ function update(renderer, scene, controls){
             // Collision ! Do something
             console.log('collision')
             if(keyboard.pressed("W")){
+                car.translateZ(-speed*2*step)
+                speed = 0;
+            }
+            if(keyboard.pressed("S")){
                 car.translateZ(-speed*2*step)
                 speed = 0;
             }
