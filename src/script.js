@@ -32,7 +32,7 @@ async function main(){
         0.1,                                      // Near clipping plane
         1000                                    // Far clipping plane
     )
-    camera.position.set(7, 7, 0)
+    camera.position.set(7, 7, 2)
 
 
     // Add an orbitcontrol class instance
@@ -114,12 +114,12 @@ async function main(){
     scene.add(bookshelf2)
     bookshelf2.position.set(-12,0,-10.4)
 
-    var [bookshelf, bookshelfBox] = await loadGLTFModell("black_leather_chair.gltf", 3)
-    scene.add(bookshelf)
-    bookshelf.position.set(3.5,0,-1)
-    bookshelf.rotation.y = 11*Math.PI/8
+    var [leatherchair,leatherchairBox] = await loadGLTFModell("black_leather_chair.gltf", 3)
+    scene.add(leatherchair)
+    leatherchair.position.set(3.5,0,-1)
+    leatherchair.rotation.y = 11*Math.PI/8
 
-    //add a test car
+    //add drive car
     var [car, carBox] = await loadGLTFModell("sportcar.017.glb", 0.002)
     car.name= "car"
     scene.add(car)
@@ -128,7 +128,7 @@ async function main(){
     
 
     // Add ball
-    var ball = generateBall(0.25, 0xff00ff, 0, 0.25, 2)
+    var ball = generateBall(0.25, 0, 0.25, 2)
     ball.name = "ball"
     scene.add(ball)
     // var objLoader = new OBJLoader();
@@ -155,6 +155,35 @@ async function main(){
     //         scene.add( armchair );
     //     });
     // });
+    //place the car
+    car.position.set(0,0,0)
+    var plant = await loadOBJModell("10461_Yucca_Plant_v1_max2010_it2", 0.02)
+    var geo = new THREE.CylinderGeometry(0.35, 0.25, 1.5, 10, 10)
+    var mesh = new THREE.Mesh(geo, new THREE.MeshNormalMaterial())
+    scene.add(plant)
+    scene.add(mesh)
+    plant.position.set(10,0,-8)
+    mesh.position.set(10,0,-8)
+    mesh.name = "plant1"
+    mesh.visible = false
+    
+
+    plant.rotation.x = - Math.PI / 2
+    var plant2 = plant.clone()
+    var mesh2 = mesh.clone()
+    scene.add(plant2)
+    scene.add(mesh2)
+    plant2.position.set(10,0,8)
+    mesh2.position.set(10,0,8)
+    mesh2.name = "plant2"
+
+    var plant3 = plant.clone()
+    var mesh3 = mesh.clone()
+    scene.add(plant3)
+    scene.add(mesh3)
+    plant3.position.set(-11,0,-6)
+    mesh3.position.set(-11,0,-6)
+    mesh3.name = "plant3"
 
     var firstPersonCamera = new THREE.PerspectiveCamera(
         45,                                     // Field of View (normally between 40 and 80)
@@ -208,14 +237,6 @@ function update(renderer, scene, controls){
     if (mixer != null) {
         mixer.update(step);
     };
-
-    // var floor = scene.getObjectByName("floor")
-    // scene.children[0].rotation.y += 0.002
-    // floor.rotation.z += 0.001
-    // scene.traverse(function(child){
-    //     child.position.x += 0.001
-    // })
-
     
     var car = scene.getObjectByName("car")
     var ball = scene.getObjectByName("ball")
@@ -268,6 +289,24 @@ function update(renderer, scene, controls){
                 0.25,
                 ball.position.z + dir.z / 20
             )
+            console.log(dir)
+            if (dir.x <= 0) {
+                console.log(dir.x)
+                ball.rotation.z += 0.1
+            }
+            if (dir.x >= 0) {
+                console.log(dir.x)
+                ball.rotation.z -= 0.1
+            }
+            if (dir.z >= 0) {
+                console.log(dir.z)
+                ball.rotation.x += 0.1
+            }
+            if (dir.z <= 0) {
+                console.log(dir.z)
+                ball.rotation.x -= 0.1
+            }
+            
           }
         })
     })
@@ -276,13 +315,19 @@ function update(renderer, scene, controls){
     var leg2 = scene.getObjectByName("tableCollision2")
     var leg3 = scene.getObjectByName("tableCollision3")
     var leg4 = scene.getObjectByName("tableCollision4")
+    var plant1 = scene.getObjectByName("plant1")
+    var plant2 = scene.getObjectByName("plant2")
+    var plant3 = scene.getObjectByName("plant3")
 
     var leg1BB = generateBB(leg1)
     var leg2BB = generateBB(leg2)
     var leg3BB = generateBB(leg3)
     var leg4BB = generateBB(leg4)
+    var plant1BB = generateBB(plant1)
+    var plant2BB = generateBB(plant2)
+    var plant3BB = generateBB(plant3)
 
-    var tableBBs = [carBB, leg1BB, leg2BB, leg3BB, leg4BB]
+    var tableBBs = [carBB, leg1BB, leg2BB, leg3BB, leg4BB, plant1BB, plant2BB, plant3BB]
 
     tableBBs.forEach(bb => {
         // Filter out this bb from BBs
@@ -372,9 +417,13 @@ function generateFloor(w, d){
 }
 
 
-function generateBall(r, color, x, y, z) {
+function generateBall(r, x, y, z) {
     var geometry = new THREE.SphereGeometry(r, 32, 16)
-    var material = new THREE.MeshStandardMaterial({ color: color })
+    var material = new THREE.MeshStandardMaterial({ 
+        map: new THREE.TextureLoader().load(
+            'img/ball.jpeg'
+        ) 
+    })
     var ball = new THREE.Mesh(geometry, material)
 
     ball.position.set(x, y, z)
@@ -410,17 +459,28 @@ async function loadGLTFModell(filename, scale){
     bbox.setFromObject(modell)
     if(gltf.animations[0]){
         mixer = new THREE.AnimationMixer( gltf.scene );
-        // let clip = gltf.animations[0];
         console.log(gltf.animations)
         
         mixer.clipAction( gltf.animations[0] ).play();
+        mixer.clipAction( gltf.animations[1] ).play();
         mixer.clipAction( gltf.animations[2] ).play();
         mixer.clipAction( gltf.animations[3] ).play();
-        mixer.clipAction( gltf.animations[4] ).play();
-        mixer.clipAction( gltf.animations[5] ).play();
 
     }    
     return [modell, bbox]
+}
+
+async function loadOBJModell(filename, scale){
+    var mtlLoader = new MTLLoader()
+    var materials = await mtlLoader.loadAsync("models/"+filename+".mtl")
+    
+    // materials.preload();
+    var objLoader = new OBJLoader();
+    objLoader.setMaterials(materials);
+    var object = await objLoader.loadAsync("models/"+filename+".obj")
+    object.scale.set(scale,scale,scale)
+    return object;
+
 }
 
 
@@ -482,5 +542,6 @@ async function generateDeskLamp(scale, rotationY, x, y, z) {
 
     return group
 }
+
 
 main()
