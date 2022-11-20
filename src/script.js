@@ -2,6 +2,7 @@ import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 import { Water } from 'three/examples/jsm/objects/Water'
@@ -38,11 +39,8 @@ async function main(){
     var controls = new OrbitControls(camera, renderer.domElement)
     controls.maxPolarAngle = Math.PI * 0.495
     controls.target.set(0, 2, 0)
-    controls.minDistance = 4.0
-    controls.maxDistance = 10.0
-
-    const axesHelper = new THREE.AxesHelper( 5 );
-    scene.add( axesHelper );
+    controls.minDistance = 3.5
+    controls.maxDistance = 18.0
 
     // Add an ambient light
     var ambientLight = generateAmbientLight(0xffffff, 0.1)
@@ -105,9 +103,21 @@ async function main(){
 
 
     // Load a tablelamp modell imported from blender
-    var deskLamp = await generateDeskLamp(2, 8*Math.PI/10, -tableBox.max.x + 0.4, tableBox.max.y-0.4, 2.4)
+    var deskLamp = await generateDeskLamp(2, 8*Math.PI/10, -tableBox.max.x + 0.4, 2.34, 2.4)
     scene.add(deskLamp)
     
+    var [bookshelf, bookshelfBox] = await loadGLTFModell("Old_Dusty_Bookshelf.glb", 3)
+    scene.add(bookshelf)
+    bookshelf.position.set(-10,0,-12)
+    bookshelf.rotation.y = 5*Math.PI/4
+    var bookshelf2 = bookshelf.clone()
+    scene.add(bookshelf2)
+    bookshelf2.position.set(-12,0,-10.4)
+
+    var [bookshelf, bookshelfBox] = await loadGLTFModell("black_leather_chair.gltf", 3)
+    scene.add(bookshelf)
+    bookshelf.position.set(3.5,0,-1)
+    bookshelf.rotation.y = 11*Math.PI/8
 
     //add a test car
     var [car, carBox] = await loadGLTFModell("sportcar.017.glb", 0.002)
@@ -121,15 +131,15 @@ async function main(){
     var ball = generateBall(0.25, 0xff00ff, 0, 0.25, 2)
     ball.name = "ball"
     scene.add(ball)
-    var objLoader = new OBJLoader();
+    // var objLoader = new OBJLoader();
     
-    objLoader.load("models/armchair/Armchair_Monti_156__corona.obj", function(object)
-    {    
-        var armchair = object;
-        armchair.scale.set(0.03,0.03,0.03)
-        armchair.position.set(10,0,-8)
-        scene.add( armchair );
-    });
+    // objLoader.load("models/3002242.obj", function(object)
+    // {    
+    //     var armchair = object;
+    //     armchair.scale.set(0.03,0.03,0.03)
+    //     armchair.position.set(10,0,-8)
+    //     scene.add( armchair );
+    // });
 
     // var mtlLoader = new MTLLoader()
     // mtlLoader.load("models/armchair/Armchair_Monti_156__corona.mtl", function(materials)
@@ -145,9 +155,6 @@ async function main(){
     //         scene.add( armchair );
     //     });
     // });
-    // var objLoader = new OBJLoader();
-    // objLoader.load("..\static\models\Armchair_Monti_156__corona.obj")
-
 
     var firstPersonCamera = new THREE.PerspectiveCamera(
         45,                                     // Field of View (normally between 40 and 80)
@@ -224,11 +231,11 @@ function update(renderer, scene, controls){
         }
         if(keyboard.pressed("A")){
             if(speed > 0.1) car.rotation.y += rotationValue/speed > maxTurning ? maxTurning : rotationValue/speed;
-            if(speed < -0.1) car.rotation.y -= rotationValue/speed > maxTurning ? maxTurning : rotationValue/speed;
+            if(speed < -0.1) car.rotation.y -= rotationValue/-speed > maxTurning ? maxTurning : rotationValue/-speed;
         }
         if(keyboard.pressed("D")){
             if(speed > 0.1) car.rotation.y -= rotationValue/speed > maxTurning ? maxTurning : rotationValue/speed;
-            if(speed < -0.1) car.rotation.y += rotationValue/speed > maxTurning ? maxTurning : rotationValue/speed;
+            if(speed < -0.1) car.rotation.y += rotationValue/-speed > maxTurning ? maxTurning : rotationValue/-speed;
         }
     }else{
         car.translateZ(-speed*2*step)
@@ -390,6 +397,9 @@ async function loadGLTFModell(filename, scale){
     var loader = new GLTFLoader()
     var modell = new THREE.Object3D()
     var bbox = new THREE.Box3()
+    var dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath( "libextern/draco/" );
+    loader.setDRACOLoader( dracoLoader );
     var gltf = await loader.loadAsync( 'models/'+filename)
     gltf.scene.scale.set(scale *gltf.scene.scale.x, scale *gltf.scene.scale.y, scale *gltf.scene.scale.z)
     modell.add( gltf.scene )
@@ -404,8 +414,11 @@ async function loadGLTFModell(filename, scale){
         console.log(gltf.animations)
         
         mixer.clipAction( gltf.animations[0] ).play();
-            
-        
+        mixer.clipAction( gltf.animations[2] ).play();
+        mixer.clipAction( gltf.animations[3] ).play();
+        mixer.clipAction( gltf.animations[4] ).play();
+        mixer.clipAction( gltf.animations[5] ).play();
+
     }    
     return [modell, bbox]
 }
