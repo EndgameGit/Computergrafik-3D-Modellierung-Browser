@@ -105,19 +105,51 @@ async function main(){
     // Load a tablelamp modell imported from blender
     var deskLamp = await generateDeskLamp(2, 8*Math.PI/10, -tableBox.max.x + 0.4, 2.34, 2.4)
     scene.add(deskLamp)
-    
+
     var [bookshelf, bookshelfBox] = await loadGLTFModell("Old_Dusty_Bookshelf.glb", 3)
-    scene.add(bookshelf)
     bookshelf.position.set(-10,0,-12)
     bookshelf.rotation.y = 5*Math.PI/4
     var bookshelf2 = bookshelf.clone()
-    scene.add(bookshelf2)
     bookshelf2.position.set(-12,0,-10.4)
+
+    var bookshelfs = new THREE.Group()
+    bookshelfs.add(bookshelf, bookshelf2)
+    scene.add(bookshelfs)
+    bookshelfs.name = "bookshelfs"
+    
 
     var [leatherchair,leatherchairBox] = await loadGLTFModell("black_leather_chair.gltf", 3)
     scene.add(leatherchair)
     leatherchair.position.set(3.5,0,-1)
     leatherchair.rotation.y = 11*Math.PI/8
+
+    var cylChair = generateCylinder(0.025, 0.025, 1.5, 10, 10)
+    cylChair.position.set(1, 0, -0.33)
+    cylChair.name = "chair1"
+    cylChair.visible = false
+    
+    var cylChair2 = generateCylinder(0.025, 0.025, 1.5, 10, 10)
+    cylChair2.position.set(0.23, 0, 1)
+    cylChair2.name = "chair2"
+    cylChair2.visible = false
+
+    var cylChair3 = generateCylinder(0.025, 0.025, 1.5, 10, 10)
+    cylChair3.position.set(-1, 0, 0.22)
+    cylChair3.name = "chair3"
+    cylChair3.visible = false
+
+    var cylChair4 = generateCylinder(0.025, 0.025, 1.5, 10, 10)
+    cylChair4.position.set(-0.33, 0, -1)
+    cylChair4.name = "chair4"
+    cylChair4.visible = false
+
+    var groupChair = new THREE.Group()
+    groupChair.add(cylChair, cylChair2, cylChair3, cylChair4)
+    scene.add(groupChair)
+    groupChair.position.set(3.5,0,-1)
+    groupChair.rotation.y = 11*Math.PI/8
+
+    
 
     //add drive car
     var [car, carBox] = await loadGLTFModell("sportcar.017.glb", 0.002)
@@ -158,8 +190,7 @@ async function main(){
     //place the car
     car.position.set(0,0,0)
     var plant = await loadOBJModell("10461_Yucca_Plant_v1_max2010_it2", 0.02)
-    var geo = new THREE.CylinderGeometry(0.35, 0.25, 1.5, 10, 10)
-    var mesh = new THREE.Mesh(geo, new THREE.MeshNormalMaterial())
+    var mesh = generateCylinder(0.35, 0.25, 1.5, 10, 10)
     scene.add(plant)
     scene.add(mesh)
     plant.position.set(10,0,-8)
@@ -318,6 +349,11 @@ function update(renderer, scene, controls){
     var plant1 = scene.getObjectByName("plant1")
     var plant2 = scene.getObjectByName("plant2")
     var plant3 = scene.getObjectByName("plant3")
+    var chair1 = scene.getObjectByName("chair1")
+    var chair2 = scene.getObjectByName("chair2")
+    var chair3 = scene.getObjectByName("chair3")
+    var chair4 = scene.getObjectByName("chair4")
+    var bookshelfs = scene.getObjectByName("bookshelfs")
 
     var leg1BB = generateBB(leg1)
     var leg2BB = generateBB(leg2)
@@ -326,8 +362,18 @@ function update(renderer, scene, controls){
     var plant1BB = generateBB(plant1)
     var plant2BB = generateBB(plant2)
     var plant3BB = generateBB(plant3)
+    var chair1BB = generateBB(chair1)
+    var chair2BB = generateBB(chair2)
+    var chair3BB = generateBB(chair3)
+    var chair4BB = generateBB(chair4)
+    var bookshelfsBB = generateBB(bookshelfs)
 
-    var tableBBs = [carBB, leg1BB, leg2BB, leg3BB, leg4BB, plant1BB, plant2BB, plant3BB]
+    var tableBBs = [
+        carBB, leg1BB, leg2BB, leg3BB, leg4BB, 
+        plant1BB, plant2BB, plant3BB,
+        chair1BB, chair2BB, chair3BB, chair4BB,
+        bookshelfsBB
+    ]
 
     tableBBs.forEach(bb => {
         // Filter out this bb from BBs
@@ -541,6 +587,21 @@ async function generateDeskLamp(scale, rotationY, x, y, z) {
     group.rotation.y = rotationY
 
     return group
+}
+
+
+function generateCylinder(radiusTop, radiusBottom, height, radialSegments, heightSegments) {
+    var geo = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments, heightSegments)
+    var mesh = new THREE.Mesh(geo, new THREE.MeshNormalMaterial())
+
+    return mesh
+}
+
+function generateBox(width, height, depth) {
+    var geo = new THREE.BoxGeometry(width, height, depth)
+    var mesh = new THREE.Mesh(geo, new THREE.MeshNormalMaterial())
+
+    return mesh
 }
 
 
