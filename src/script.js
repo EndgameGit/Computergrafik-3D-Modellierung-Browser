@@ -12,6 +12,10 @@ const clock = new THREE.Clock()
 const keyboard = new THREEx.KeyboardState()
 var activeCamera, mixer
 
+let speed = 0
+let rotationValue = 0.4
+let maxTurning = 0.03
+
 async function main(){
 
     // Create an instance of the WebGL Renderer as a tool that three.js uses to alocate space on the webpage
@@ -163,30 +167,7 @@ async function main(){
     var ball = generateBall(0.25, 0, 0.25, 2)
     ball.name = "ball"
     scene.add(ball)
-    // var objLoader = new OBJLoader();
-    
-    // objLoader.load("models/3002242.obj", function(object)
-    // {    
-    //     var armchair = object;
-    //     armchair.scale.set(0.03,0.03,0.03)
-    //     armchair.position.set(10,0,-8)
-    //     scene.add( armchair );
-    // });
 
-    // var mtlLoader = new MTLLoader()
-    // mtlLoader.load("models/armchair/Armchair_Monti_156__corona.mtl", function(materials)
-    // {
-    //     materials.preload();
-    //     var objLoader = new OBJLoader();
-    //     objLoader.setMaterials(materials);
-    //     objLoader.load("models/armchair/Armchair_Monti_156__corona.obj", function(object)
-    //     {    
-    //         var armchair = object;
-    //         armchair.scale.set(0.03,0.03,0.03)
-    //         armchair.position.set(10,0,-8)
-    //         scene.add( armchair );
-    //     });
-    // });
     //place the car
     car.position.set(0,0,0)
     var plant = await loadOBJModell("10461_Yucca_Plant_v1_max2010_it2", 0.02)
@@ -244,11 +225,9 @@ async function main(){
     var gui = new GUI()
     gui.add(settings, "camera", cameraViews).onChange( function() {
         if (settings.camera == "orbitcontrol") {
-            console.log("orbitcontrol")
             activeCamera = camera
         }
         if (settings.camera == "first-person") {
-            console.log("first-person")
             activeCamera = firstPersonCamera
         }
     }); 
@@ -256,9 +235,7 @@ async function main(){
     //animate the scene
     update(renderer, scene, controls)
 }
-let speed = 0;
-let rotationValue = 0.4
-let maxTurning = 0.03
+
 
 function update(renderer, scene, controls){
 
@@ -313,28 +290,22 @@ function update(renderer, scene, controls){
         otherBBs.forEach(other => {
           if (bb.intersectsBox(other)) {
             // Collision ! Do something
-            console.log('collision')
             dir.subVectors(ball.position, car.position).normalize()
             ball.position.set(
                 ball.position.x + dir.x / 20,
                 0.25,
                 ball.position.z + dir.z / 20
             )
-            console.log(dir)
             if (dir.x <= 0) {
-                console.log(dir.x)
                 ball.rotation.z += 0.1
             }
             if (dir.x >= 0) {
-                console.log(dir.x)
                 ball.rotation.z -= 0.1
             }
             if (dir.z >= 0) {
-                console.log(dir.z)
                 ball.rotation.x += 0.1
             }
             if (dir.z <= 0) {
-                console.log(dir.z)
                 ball.rotation.x -= 0.1
             }
             
@@ -383,7 +354,6 @@ function update(renderer, scene, controls){
         otherBBs.forEach(other => {
           if (bb.intersectsBox(other)) {
             // Collision ! Do something
-            console.log('collision')
             if(keyboard.pressed("W")){
                 car.translateZ(-speed*2*step)
                 speed = 0;
@@ -479,13 +449,13 @@ function generateBall(r, x, y, z) {
     return ball
 }
 
+
 function generateBB(object) {
     
     var object_bb = new THREE.Box3().setFromObject(object, true)
 
     return object_bb
 }
-
 
 
 async function loadGLTFModell(filename, scale){
@@ -505,16 +475,17 @@ async function loadGLTFModell(filename, scale){
     bbox.setFromObject(modell)
     if(gltf.animations[0]){
         mixer = new THREE.AnimationMixer( gltf.scene );
-        console.log(gltf.animations)
-        
+
         mixer.clipAction( gltf.animations[0] ).play();
         mixer.clipAction( gltf.animations[1] ).play();
         mixer.clipAction( gltf.animations[2] ).play();
         mixer.clipAction( gltf.animations[3] ).play();
 
-    }    
+    }
+
     return [modell, bbox]
 }
+
 
 async function loadOBJModell(filename, scale){
     var mtlLoader = new MTLLoader()
@@ -597,12 +568,6 @@ function generateCylinder(radiusTop, radiusBottom, height, radialSegments, heigh
     return mesh
 }
 
-function generateBox(width, height, depth) {
-    var geo = new THREE.BoxGeometry(width, height, depth)
-    var mesh = new THREE.Mesh(geo, new THREE.MeshNormalMaterial())
-
-    return mesh
-}
 
 
 main()
