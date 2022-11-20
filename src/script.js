@@ -12,6 +12,10 @@ const clock = new THREE.Clock()
 const keyboard = new THREEx.KeyboardState()
 var activeCamera, mixer
 
+let speed = 0
+let rotationValue = 0.4
+let maxTurning = 0.03
+
 async function main(){
 
     // Create an instance of the WebGL Renderer as a tool that three.js uses to alocate space on the webpage
@@ -73,42 +77,125 @@ async function main(){
     // Load the table modell from blender
     var [table, tableBox] = await loadGLTFModell("TischAnimation/NewestTisch.gltf", 0.7)
     scene.add(table)
-    
+    var tableCollisionGeometry = new THREE.BoxGeometry(0.29, 0.27, 0.27)
+    var tableCollisionMaterial = new THREE.MeshBasicMaterial({color: 0xffffff})
+
+    var tableCollision1 = new THREE.Mesh(tableCollisionGeometry, tableCollisionMaterial)
+    var tableCollision2 = new THREE.Mesh(tableCollisionGeometry, tableCollisionMaterial)
+    var tableCollision3 = new THREE.Mesh(tableCollisionGeometry, tableCollisionMaterial)
+    var tableCollision4 = new THREE.Mesh(tableCollisionGeometry, tableCollisionMaterial)
+
+    tableCollision1.name = "tableCollision1"
+    tableCollision2.name = "tableCollision2"
+    tableCollision3.name = "tableCollision3"
+    tableCollision4.name = "tableCollision4"
+
+    tableCollision1.visible = false
+    tableCollision2.visible = false
+    tableCollision3.visible = false
+    tableCollision4.visible = false
+
+    scene.add(tableCollision1)
+    scene.add(tableCollision2)
+    scene.add(tableCollision3)
+    scene.add(tableCollision4)
+
+    tableCollision1.position.set(1.21, 0, 2.27)
+    tableCollision2.position.set(-1.21, 0, 2.27)
+    tableCollision3.position.set(-1.21, 0, -2.27)
+    tableCollision4.position.set(1.21, 0, -2.27)
+
 
     // Load a tablelamp modell imported from blender
     var deskLamp = await generateDeskLamp(2, 8*Math.PI/10, -tableBox.max.x + 0.4, 2.34, 2.4)
     scene.add(deskLamp)
-    
+
     var [bookshelf, bookshelfBox] = await loadGLTFModell("Old_Dusty_Bookshelf.glb", 3)
-    scene.add(bookshelf)
     bookshelf.position.set(-10,0,-12)
     bookshelf.rotation.y = 5*Math.PI/4
     var bookshelf2 = bookshelf.clone()
-    scene.add(bookshelf2)
     bookshelf2.position.set(-12,0,-10.4)
+
+    var bookshelfs = new THREE.Group()
+    bookshelfs.add(bookshelf, bookshelf2)
+    scene.add(bookshelfs)
+    bookshelfs.name = "bookshelfs"
+    
 
     var [leatherchair,leatherchairBox] = await loadGLTFModell("black_leather_chair.gltf", 3)
     scene.add(leatherchair)
     leatherchair.position.set(3.5,0,-1)
     leatherchair.rotation.y = 11*Math.PI/8
 
+    var cylChair = generateCylinder(0.025, 0.025, 1.5, 10, 10)
+    cylChair.position.set(1, 0, -0.33)
+    cylChair.name = "chair1"
+    cylChair.visible = false
+    
+    var cylChair2 = generateCylinder(0.025, 0.025, 1.5, 10, 10)
+    cylChair2.position.set(0.23, 0, 1)
+    cylChair2.name = "chair2"
+    cylChair2.visible = false
+
+    var cylChair3 = generateCylinder(0.025, 0.025, 1.5, 10, 10)
+    cylChair3.position.set(-1, 0, 0.22)
+    cylChair3.name = "chair3"
+    cylChair3.visible = false
+
+    var cylChair4 = generateCylinder(0.025, 0.025, 1.5, 10, 10)
+    cylChair4.position.set(-0.33, 0, -1)
+    cylChair4.name = "chair4"
+    cylChair4.visible = false
+
+    var groupChair = new THREE.Group()
+    groupChair.add(cylChair, cylChair2, cylChair3, cylChair4)
+    scene.add(groupChair)
+    groupChair.position.set(3.5,0,-1)
+    groupChair.rotation.y = 11*Math.PI/8
+
+    
+
     //add drive car
     var [car, carBox] = await loadGLTFModell("sportcar.017.glb", 0.002)
     car.name= "car"
     scene.add(car)
-    //place the car
-    car.position.set(2,0,1)
+    //place the car on the table
+    car.position.set(0,0,0)
+    
 
+    // Add ball
+    var ball = generateBall(0.25, 0, 0.25, 2)
+    ball.name = "ball"
+    scene.add(ball)
+
+    //place the car
+    car.position.set(0,0,0)
     var plant = await loadOBJModell("10461_Yucca_Plant_v1_max2010_it2", 0.02)
+    var mesh = generateCylinder(0.35, 0.25, 1.5, 10, 10)
     scene.add(plant)
+    scene.add(mesh)
     plant.position.set(10,0,-8)
+    mesh.position.set(10,0,-8)
+    mesh.name = "plant1"
+    mesh.visible = false
+    
+
     plant.rotation.x = - Math.PI / 2
     var plant2 = plant.clone()
+    var mesh2 = mesh.clone()
     scene.add(plant2)
+    scene.add(mesh2)
     plant2.position.set(10,0,8)
+    mesh2.position.set(10,0,8)
+    mesh2.name = "plant2"
+
     var plant3 = plant.clone()
+    var mesh3 = mesh.clone()
     scene.add(plant3)
+    scene.add(mesh3)
     plant3.position.set(-11,0,-6)
+    mesh3.position.set(-11,0,-6)
+    mesh3.name = "plant3"
 
     var firstPersonCamera = new THREE.PerspectiveCamera(
         45,                                     // Field of View (normally between 40 and 80)
@@ -138,21 +225,18 @@ async function main(){
     var gui = new GUI()
     gui.add(settings, "camera", cameraViews).onChange( function() {
         if (settings.camera == "orbitcontrol") {
-            console.log("orbitcontrol")
             activeCamera = camera
         }
         if (settings.camera == "first-person") {
-            console.log("first-person")
             activeCamera = firstPersonCamera
         }
-    });
+    }); 
 
     //animate the scene
     update(renderer, scene, controls)
 }
-let speed = 0;
-let rotationValue = 0.4
-let maxTurning = 0.03
+
+
 function update(renderer, scene, controls){
 
     var step = clock.getDelta()
@@ -163,6 +247,8 @@ function update(renderer, scene, controls){
     };
     
     var car = scene.getObjectByName("car")
+    var ball = scene.getObjectByName("ball")
+    
     if(car.position.x < 14.8 && car.position.x > -14.8 && car.position.z< 14.8 && car.position.z > -14.8){
         
         if(keyboard.pressed("W")){
@@ -192,6 +278,93 @@ function update(renderer, scene, controls){
     var water = scene.getObjectByName("water")
     water.material.uniforms[ 'time' ].value += 1.0 / 60.0
 
+    var carBB = generateBB(car)
+    var ballBB = generateBB(ball)
+    var BBs = [carBB, ballBB]
+    var dir = new THREE.Vector3() // direction vector
+    BBs.forEach(bb => {
+        // Filter out this bb from BBs
+        const otherBBs = BBs.filter(other => other !== bb)
+      
+        // Check if any of the other BBs intersects with this bb
+        otherBBs.forEach(other => {
+          if (bb.intersectsBox(other)) {
+            // Collision ! Do something
+            dir.subVectors(ball.position, car.position).normalize()
+            ball.position.set(
+                ball.position.x + dir.x / 20,
+                0.25,
+                ball.position.z + dir.z / 20
+            )
+            if (dir.x <= 0) {
+                ball.rotation.z += 0.1
+            }
+            if (dir.x >= 0) {
+                ball.rotation.z -= 0.1
+            }
+            if (dir.z >= 0) {
+                ball.rotation.x += 0.1
+            }
+            if (dir.z <= 0) {
+                ball.rotation.x -= 0.1
+            }
+            
+          }
+        })
+    })
+
+    var leg1 = scene.getObjectByName("tableCollision1")
+    var leg2 = scene.getObjectByName("tableCollision2")
+    var leg3 = scene.getObjectByName("tableCollision3")
+    var leg4 = scene.getObjectByName("tableCollision4")
+    var plant1 = scene.getObjectByName("plant1")
+    var plant2 = scene.getObjectByName("plant2")
+    var plant3 = scene.getObjectByName("plant3")
+    var chair1 = scene.getObjectByName("chair1")
+    var chair2 = scene.getObjectByName("chair2")
+    var chair3 = scene.getObjectByName("chair3")
+    var chair4 = scene.getObjectByName("chair4")
+    var bookshelfs = scene.getObjectByName("bookshelfs")
+
+    var leg1BB = generateBB(leg1)
+    var leg2BB = generateBB(leg2)
+    var leg3BB = generateBB(leg3)
+    var leg4BB = generateBB(leg4)
+    var plant1BB = generateBB(plant1)
+    var plant2BB = generateBB(plant2)
+    var plant3BB = generateBB(plant3)
+    var chair1BB = generateBB(chair1)
+    var chair2BB = generateBB(chair2)
+    var chair3BB = generateBB(chair3)
+    var chair4BB = generateBB(chair4)
+    var bookshelfsBB = generateBB(bookshelfs)
+
+    var tableBBs = [
+        carBB, leg1BB, leg2BB, leg3BB, leg4BB, 
+        plant1BB, plant2BB, plant3BB,
+        chair1BB, chair2BB, chair3BB, chair4BB,
+        bookshelfsBB
+    ]
+
+    tableBBs.forEach(bb => {
+        // Filter out this bb from BBs
+        const otherBBs = tableBBs.filter(other => other !== bb)
+      
+        // Check if any of the other BBs intersects with this bb
+        otherBBs.forEach(other => {
+          if (bb.intersectsBox(other)) {
+            // Collision ! Do something
+            if(keyboard.pressed("W")){
+                car.translateZ(-speed*2*step)
+                speed = 0;
+            }
+            if(keyboard.pressed("S")){
+                car.translateZ(-speed*2*step)
+                speed = 0;
+            }
+          }
+        })
+    })
 
     requestAnimationFrame(function(){
         update(renderer, scene, controls)
@@ -260,6 +433,31 @@ function generateFloor(w, d){
 }
 
 
+function generateBall(r, x, y, z) {
+    var geometry = new THREE.SphereGeometry(r, 32, 16)
+    var material = new THREE.MeshStandardMaterial({ 
+        map: new THREE.TextureLoader().load(
+            'img/ball.jpeg'
+        ) 
+    })
+    var ball = new THREE.Mesh(geometry, material)
+
+    ball.position.set(x, y, z)
+    ball.castShadow = true
+    ball.receiveShadow = true
+
+    return ball
+}
+
+
+function generateBB(object) {
+    
+    var object_bb = new THREE.Box3().setFromObject(object, true)
+
+    return object_bb
+}
+
+
 async function loadGLTFModell(filename, scale){
     var loader = new GLTFLoader()
     var modell = new THREE.Object3D()
@@ -277,16 +475,17 @@ async function loadGLTFModell(filename, scale){
     bbox.setFromObject(modell)
     if(gltf.animations[0]){
         mixer = new THREE.AnimationMixer( gltf.scene );
-        console.log(gltf.animations)
-        
+
         mixer.clipAction( gltf.animations[0] ).play();
         mixer.clipAction( gltf.animations[1] ).play();
         mixer.clipAction( gltf.animations[2] ).play();
         mixer.clipAction( gltf.animations[3] ).play();
 
-    }    
+    }
+
     return [modell, bbox]
 }
+
 
 async function loadOBJModell(filename, scale){
     var mtlLoader = new MTLLoader()
@@ -360,5 +559,15 @@ async function generateDeskLamp(scale, rotationY, x, y, z) {
 
     return group
 }
+
+
+function generateCylinder(radiusTop, radiusBottom, height, radialSegments, heightSegments) {
+    var geo = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments, heightSegments)
+    var mesh = new THREE.Mesh(geo, new THREE.MeshNormalMaterial())
+
+    return mesh
+}
+
+
 
 main()
